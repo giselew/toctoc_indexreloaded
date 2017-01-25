@@ -1,0 +1,39 @@
+//includeLibs.tx_toctoc_indexreloaded_pi1 = typo3conf/ext/toctoc_indexreloaded/pi1/class.tx_toctoc_indexreloaded_pi1.php
+plugin.tx_toctoc_indexreloaded_pi1 = USER_INT
+plugin.tx_toctoc_indexreloaded_pi1 {
+// 000, Basic
+    dontmod = {$plugin.tx_toctoc_indexreloaded_pi1.dontmod}
+	dontmodJS = {$plugin.tx_toctoc_indexreloaded_pi1.dontmodJS}
+	dontmodCSS = {$plugin.tx_toctoc_indexreloaded_pi1.dontmodCSS}
+	excludesarr = {$plugin.tx_toctoc_indexreloaded_pi1.excludesarr}
+	includesarr = {$plugin.tx_toctoc_indexreloaded_pi1.includesarr}
+	forceNewFiles = {$plugin.tx_toctoc_indexreloaded_pi1.forceNewFiles}
+	productionMode = {$plugin.tx_toctoc_indexreloaded_pi1.productionMode}
+	deactivateOnPages = {$plugin.tx_toctoc_indexreloaded_pi1.deactivateOnPages}
+// 100, Process
+	optProcessfiles = {$plugin.tx_toctoc_indexreloaded_pi1.optProcessfiles}
+	optProcessjsfiles = {$plugin.tx_toctoc_indexreloaded_pi1.optProcessjsfiles}
+	asynchLastJS = {$plugin.tx_toctoc_indexreloaded_pi1.asynchLastJS}
+	optProcesscssfiles = {$plugin.tx_toctoc_indexreloaded_pi1.optProcesscssfiles}
+	excludesProcessing = {$plugin.tx_toctoc_indexreloaded_pi1.excludesProcessing}
+	includesProcessing = {$plugin.tx_toctoc_indexreloaded_pi1.includesProcessing}
+	typo3tempsubfolder = {$plugin.tx_toctoc_indexreloaded_pi1.typo3tempsubfolder}
+// 200, Compress
+	doCrunchCSS = {$plugin.tx_toctoc_indexreloaded_pi1.doCrunchCSS}
+	optMinifyjsfiles ={$plugin.tx_toctoc_indexreloaded_pi1.optMinifyjsfiles}
+	noMinifyjsList ={$plugin.tx_toctoc_indexreloaded_pi1.noMinifyjsList}
+// 300, CSSfolding
+	generateCSSbelowTheFold = {$plugin.tx_toctoc_indexreloaded_pi1.generateCSSbelowTheFold}
+	tagsToKeepAboveTheFold = {$plugin.tx_toctoc_indexreloaded_pi1.tagsToKeepAboveTheFold}
+	IDsToKeepAboveTheFold = {$plugin.tx_toctoc_indexreloaded_pi1.IDsToKeepAboveTheFold}
+	classesToKeepAboveTheFold = {$plugin.tx_toctoc_indexreloaded_pi1.classesToKeepAboveTheFold}
+	mergeCSSbelowTheFold = {$plugin.tx_toctoc_indexreloaded_pi1.mergeCSSbelowTheFold}
+	freezeFolding = {$plugin.tx_toctoc_indexreloaded_pi1.freezeFolding}
+	inlineCSSaboveTheFold = {$plugin.tx_toctoc_indexreloaded_pi1.inlineCSSaboveTheFold}
+	checkDupesOnFoldingMerge = {$plugin.tx_toctoc_indexreloaded_pi1.checkDupesOnFoldingMerge}
+// 900, Debug
+	showDebugWindow = {$plugin.tx_toctoc_indexreloaded_pi1.showDebugWindow}
+	showDebugWindowBodyTag = {$plugin.tx_toctoc_indexreloaded_pi1.showDebugWindowBodyTag}
+	showOptionsInDebugWindow = {$plugin.tx_toctoc_indexreloaded_pi1.showOptionsInDebugWindow}
+	CSSFoldingReport = {$plugin.tx_toctoc_indexreloaded_pi1.CSSFoldingReport}
+}

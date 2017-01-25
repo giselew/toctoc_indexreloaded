@@ -1,0 +1,44 @@
+2014-12-15  Gisèle Wendl  <gisele.wendl@toctoc.ch>
+	* Release of version 1.0.0
+	
+2015-04-14  Gisèle Wendl  <gisele.wendl@toctoc.ch>
+	* Release of version 1.0.1
+	* Added option deactivateOnPages, allowing to let given pages output HTML without toctoc_indexreloaded CSS- and JS-transforms 
+	
+2015-12-14  Gisèle Wendl  <gisele.wendl@toctoc.ch>
+	* Release of version 1.0.2
+	* Added documentation in rst-format
+	* Compatibility TYPO3 7.6 
+	
+2016-04-06  Gisèle Wendl  <gisele.wendl@toctoc.ch>
+	* Release of version 1.0.3
+	* Fixed missing class alias in ext_localconf.php
+	* Compatibility TYPO3 8.0
+	
+2017-01-25  Gisèle Wendl  <gisele.wendl@toctoc.ch>
+	* Release of version 1.9.6 - This is a "github only" beta-version for Version 2.0.0
+	* Added automated and fast CSS folding. 
+	  Choose between "individual CSS-files per page" (fast) or "common (merged) CSS" (faster)
+	* CSS folding and merge is done by webservice on toctoc.ch - it requires an API key (https://www.toctoc.ch/en/home/apikey/)
+	* Define Classes, IDs and tags which should be left above the fold
+	  These are normally elements which are added to the page by JavaScript onLoad in the browser
+	* CSS above and below-the-fold may be frozen, no more call to the webservice are made when cssfolding.freezeFolding is active. 
+	  Freeze is possible regardless if merged or not. Freezing merged CSS is safer, 
+	  because the "element cloud" of the page does not change the name of the (merged) CSS files. 
+	* Ext:toctoc_indexreloaded should work in any PHP-solution or other CMS 
+	  (It does post-processing of the server reply without TYPO3), 
+	  see file in folder Resources/Public/ExternalUse
+	* When a querystring for original files is present, then the date information to form final file names is from the querystring - 
+	  it avoids some unnecessary access to the filesystem
+	* Last loaded JS-file may be loaded asynch with option process.asynchLastJS = 1
+	* Added TypoScript-Setup and constants: 
+	  As up to present version the extension configures in TYPO3 ext-manager,
+	  if static template is added, then TS-Setup and Constants are valid 
+	  (replacing configuration from ext manager)
+	* Added option typo3tempsubfolder: Place for the JS and CSS-files
+	* Non-TYPO3-Sites may use a configuration-file in folder Resources/Public/RawConfig
+	* TBD: documentation is ... almost done :-)
+	* TBD: Tests in many different environments 
+	  Up now a bunch of tests have been made: 
+	  Bootstrap package with manual mods, old Introduction Package, a site with manually made CSS, running TYPO3 4.7, a site using Twitter Bootstrap for a custom theme - 
+	  TYPO3 extensions toctoc_comments, tt_news, news, indexed_search. Works fine.

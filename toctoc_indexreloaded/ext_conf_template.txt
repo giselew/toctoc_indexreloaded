@@ -1,0 +1,95 @@
+# cat=basic//02; type=boolean; label=Dont modify index.php at all: Activate the extension by setting this option to 0
+dontmod = 1
+
+# cat=basic//03; type=boolean; label=Dont modify JS-files: Disable modification of JS (JavaScript) by setting this option to 1
+dontmodJS = 0
+
+# cat=basic//04; type=boolean; label=Dont modify CSS-files: Disable modification of CSS by setting this option to 1
+dontmodCSS = 0
+
+# cat=basic//05; type=string; label=Exclude list: parts of JS or CSS-filenames, that should be excluded when dontmod=0, dontmodjs=0 or/and dontmodcss=0 for inline scripts/styles a part of the text is ok for identification
+excludesarr = addthis_config
+
+# cat=basic//06; type=string; label=Include list: parts of JS or CSS-filenames, that must be included when dontmod=0, dontmodjs=0 or/and dontmodcss=0. includes overwrite the excludes. This good for more detailed filtering
+includesarr = 
+
+# cat=basic//07; type=boolean; label=Force creation of new files: You can force new files (CSS and JS) with URL-Parameter ?forceNewFiles=1 as well
+forceNewFiles = 0
+
+# cat=basic//08; type=boolean; label=Production mode: in production mode URL-Parameters ?forceNewFiles=1, ?dontModIndex=1 and ?showDebugWindow =1 are disabled
+productionMode = 0
+
+# cat=basic//09; type=string; label=Deactivate on pages: List of pages that should not be touched by toctoc_indexreloaded
+deactivateOnPages = 
+
+# cat=process//01; type=boolean; label=Enable file processing
+optProcessfiles = 1
+
+# cat=process//02; type=boolean; label=Enable JS-file processing
+optProcessjsfiles = 1
+
+# cat=process//03; type=boolean; label=Load last JS file asynchronous: Must be set to 0 when code in last JS file attemps to make document.write
+asynchLastJS = 1
+
+# cat=process//04; type=boolean; label=Enable CSS-file processing
+optProcesscssfiles = 1
+
+# cat=process//05; type=string; label=Exclude list for Processing: parts of JS or CSS-filenames, that should be excluded for processing, for inline scripts/styles a part of the text is ok for identification
+excludesProcessing = var pageid =,tx-tc-shrrr-
+
+# cat=process//06; type=string; label=Include list for Processing: parts of JS or CSS-filenames, that must be included for processing anyway. includes overwrite the excludes. This good for more detailed filtering
+includesProcessing = 
+
+# cat=process//07; type=string; label=Path to processed files: CSS and JS files will be written in this directory
+typo3tempsubfolder = typo3temp/TocTocIndexReloaded
+
+# cat=compress//01; type=boolean; label=CSS compression: CSS will be compressed	
+doCrunchCSS = 1
+
+# cat=compress//03; type=boolean; label=Enable minify of JS-files with JSMin.php - modified PHP implementation of Douglas Crockford's JSMin
+optMinifyjsfiles = 1
+
+# cat=compress//04; type=string; label=Exclude list: parts of JS-filenames, that must not be minified
+noMinifyjsList =
+
+# cat=cssfolding//01; type=boolean; label=Split CSS: Split CSS into CSS above the fold and CSS below the fold (Requires API key provided by toctoc.ch)
+generateCSSbelowTheFold = 0
+
+# cat=cssfolding//02; type=string; label=The tags in this list always remain in the CSS above the fold
+tagsToKeepAboveTheFold = code,i,b,blockquote
+
+# cat=cssfolding//03; type=string; label=The class names in this list always remain in the CSS above the fold
+classesToKeepAboveTheFold = 
+
+# cat=cssfolding//03; type=string; label=The CSS-Ids in this list always remain in the CSS above the fold
+IDsToKeepAboveTheFold =
+
+# cat=cssfolding//04; type=boolean; label=Merge CSS: When generateCSSbelowTheFold = 1, then merge new CSS into existing CSS (above and below the fold)
+mergeCSSbelowTheFold = 0
+
+# cat=cssfolding//05; type=boolean; label=Freeze folding: When mergeCSSbelowTheFold = 1, after many calculations of above- and below-CSS then normally the merged output becomes stable. Avoid recalculations by setting this option to 1
+freezeFolding = 0
+	
+# cat=cssfolding//06; type=boolean; label=Inline CSS above the fold: Also, when mergeCSSbelowTheFold = 1, above-the-fold CSS is stored in files and loaded as file links. Alternatively you can force this CSS to be loaded inline into the HTML of the page
+inlineCSSaboveTheFold = 0
+
+# cat=cssfolding//07; type=boolean; label=Check dupes while merging: When mergeCSSbelowTheFold = 1, then check CSS for duplicates (same rule, same selector) and eliminate them in CSS-output. 
+checkDupesOnFoldingMerge = 0
+
+# cat=debug//01; type=boolean; label=Show the debug window by default: You can force the debug window with URL-Parameter ?showDebugWindow=1 as well. SYS.devIPmask must match your IP.
+showDebugWindow = 0
+
+# cat=debug//02; type=string; label=Append debug window to tag: The html of the debug window is appended to this tag
+showDebugWindowBodyTag = <body>
+
+# cat=debug//03; type=boolean; label=Show options: Show options used in the debug window
+showOptionsInDebugWindow = 0
+	
+# cat=debug//04; type=boolean; label=CSS folding: Create a little report on activities during creation of above/below the fold-CSS in the debug window
+CSSFoldingReport = 0	
+
+# cat=API//01; type=string; label=APIKey: APIKey provided by toctoc.ch
+APIKey = 
+
+# cat=API//02; type=string; label=API-Server: Server hosting the APIkeys, normally www.toctoc.ch
+APIServer = www.toctoc.ch
