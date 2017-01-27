@@ -22,28 +22,21 @@
 /*
  * options and data retrieval
 */
-$currentDefaultDocument = 'indexorig.php';
-// path to the directory hosting toctoc_indexreloaded
-$relativePathToExtension = 'external/plugins';
-		
-// data retrieval
-$content = require($currentDefaultDocument);
+$currentDefaultDocument = 'indexcms.php';
+function callback($buffer) {
+	$relativePathToExtension = 'external/plugins/toctoc_indexreloaded';
+	// if your system leaves off a userid, then set it now (must be integer number)
+	$userUid = 0;
+	
+	require_once(str_replace('/', DIRECTORY_SEPARATOR, $relativePathToExtension . '/Classes/Controller/IndexReloaded.php'));
+	$IndexReloaded = new GiseleWendl\ToctocIndexreloaded\Controller\IndexReloaded;
+	$bufferout = $IndexReloaded->contentPostProc($buffer, $userUid, $relativePathToExtension);
+	return $bufferout;
+}
 
-// if your system leaves off a userid, then set it now (must be integer number)
-$userUid = 0;
-/*
- * end options and data retrieval
-*/
+ob_start("callback");
 
-/* 
- * code
- */
+require($currentDefaultDocument);
+ob_end_flush();
 
-require_once(str_replace('/', DIRECTORY_SEPARATOR, $relativePathToExtension . '/toctoc_indexreloaded/Classes/Controller/IndexReloaded.php'));
-$IndexReloaded = new GiseleWendl\ToctocIndexreloaded\Controller\IndexReloaded;
-$bufferout = $IndexReloaded->contentPostProc($content, $userUid, $relativePathToExtension);
-echo $bufferout;
-/* 
- * end code
- */
 ?>

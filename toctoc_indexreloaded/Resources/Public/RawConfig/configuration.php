@@ -80,7 +80,9 @@ $ret = array (
 // APIKey provided by toctoc.ch
 	'APIKey' => '',
 // API-Server: Server hosting the APIkeys, normally www.toctoc.ch
-	'APIServer' => 'www.toctoc.ch',		
+	'APIServer' => 'www.toctoc.ch',
+// The debug-windows only shows up if your IP matches this debugIP
+	'DebugIP' => '',
 );
 
 return $ret;

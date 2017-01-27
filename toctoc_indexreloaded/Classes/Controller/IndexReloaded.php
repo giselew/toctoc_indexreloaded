@@ -160,7 +160,7 @@ class IndexReloaded {
 	 * @param	int			$TSFEid: TYPO3-pageid
 	 * @return	string		$buffer, modified
 	 */
-	public function contentPostProc($buffer, $userUid = 0, $relativePathToExtension = '', $showDebugWindow = FALSE, $createVersionNumberedFilenamemode = 'querystring', $opts = array(), $TSFEid = 0)	{
+	public function contentPostProc($buffer, $userUid = 0, $relativePathToExtension = '', $showDebugWindow = FALSE, $createVersionNumberedFilenamemode = 'querystring', $opts = array(), $TSFEid = 0) {
 		$lenbuffer = strlen($buffer);
 		$starttimedebug = microtime(TRUE);
 		$starttimedebugcallback = $starttimedebug;
@@ -174,6 +174,12 @@ class IndexReloaded {
 		$this->donationserver = trim($opts['APIServer']);
 		$APIreset = FALSE;
 		
+		if (($_SERVER['HTTPS'] != '') && ($_SERVER['HTTPS'] != 'off')) {
+			$baseurl = 'https://'. $_SERVER['SERVER_NAME'];
+		} else {
+			$baseurl = 'http://'. $_SERVER['SERVER_NAME'];
+		}
+		
 		if (count($opts) < 3) {
 			$opts = require_once(realpath(str_replace('Classes\Controller', '', str_replace('Classes/Controller', '', dirname(__FILE__)))) . DIRECTORY_SEPARATOR .
 			str_replace('/', DIRECTORY_SEPARATOR, 'Resources/Public/RawConfig/configuration.php'));
@@ -183,6 +189,19 @@ class IndexReloaded {
 			$this->extensionrelpath = str_replace('\\', '/', $relativePathToExtension);
 			$this->extensionrelwinpath = str_replace('/', '\\', $relativePathToExtension);
 			$this->TSFEid = $this->currentPageName();
+			if ($opts['DebugIP'] != '') {
+				$ip = $this->get_client_ip();
+								if ($opts['DebugIP'] == $ip) {
+					if (intval($opts['showDebugWindow']) == 1) {
+						$this->showDebugWindowCSS = TRUE;
+						$this->showDebugWindow = TRUE;
+
+					}
+							
+				}
+				
+			}
+			
 		} else {
 			$this->typo3tempsubfolder = $opts['typo3tempsubfolder'];
 		}
@@ -595,6 +614,9 @@ class IndexReloaded {
 		$buffer = str_replace('HREF="', 'href="', $buffer);
 		$buffer = str_replace('<STYLE', '<style', $buffer);
 		$buffer = str_replace('</STYLE>', '</style>', $buffer);
+		
+		$buffer = str_replace('src="' . $baseurl, 'src="', $buffer);
+		$buffer = str_replace('url("' . $baseurl, 'url("', $buffer);
 		// end | save the input and make some basic replacements in the input for the subsequent processing
 
 		// checkin if-tags for scripts or stylesheets
@@ -648,9 +670,28 @@ class IndexReloaded {
 			$scripts=array();
 			$posscript = 0;
 			$iSkipped =1;
+			$posscriptipliscorr = 0;
+			$scriptiplusstart = '';
+			$strlenscript = strlen('<script');
 			for($i=1;$i<$indexjsarrcnt;$i++) {
-				$posscript = $posscript + strlen($indexjsarr[$i-1]);
+				$posscript = $posscript + $posscriptipliscorr + strlen($indexjsarr[$i-1]);
+				$posscriptipliscorr = 0;
+				$scriptiplusstart = '';
+				$strlenscript =strlen('<script');
 				$indexjsarr2= explode('</script>', $indexjsarr[$i]);
+				if (count($indexjsarr2) == 1) {
+					// no </script>, so 2nd script could be part of a document.write("<script ....
+					if (($i+1) < $indexjsarrcnt) {
+						$scriptiplusstart = '<script' . $indexjsarr2[0];
+						$strlenscript = strlen('<script<script');
+						$i++;
+						$iSkipped++;
+						$posscriptipliscorr = strlen($indexjsarr[$i-1]);
+						$indexjsarr2= explode('</script>', $indexjsarr[$i]);
+					}
+					
+				}
+				
 				$excludethis = FALSE;
 				$excludeprocessingthis = FALSE;
 				for($j=0;$j<$excludarrcnt;$j++) {
@@ -682,7 +723,7 @@ class IndexReloaded {
 				}
 
 				if ($excludethis == FALSE) {
-					$scripts[$i-$iSkipped]['script'] = '<script'.$indexjsarr2[0] . '</script>';
+					$scripts[$i-$iSkipped]['script'] = $scriptiplusstart . '<script'.$indexjsarr2[0] . '</script>';
 					$scripts[$i-$iSkipped]['posscript'] = $posscript;
 					if ($excludeprocessingthis == TRUE) {
 						$scripts[$i-$iSkipped]['scriptnoprocessing'] = 1;
@@ -695,12 +736,12 @@ class IndexReloaded {
 					$iSkipped++;
 				}
 				
-				$posscript = $posscript + strlen('<script');
+				$posscript = $posscript + $strlenscript;
 			}
 			
 		}
 		// end | find scripts in the page
-
+		
 		// find style and stylesheets in the page
 		if ($this->dontmodcss == 0) {
 			$indexcssarr= explode('<link ', $buffer);
@@ -818,6 +859,7 @@ class IndexReloaded {
 			$cascadingslinkcount = count($cascadingslink);
 			$cascadingsicount = count($cascadingsi);
 			$lastib=0;
+			$ib=0;
 			for ($i=0;$i<$cascadingslinkcount;$i++) {
 				$candposcascadingslink = intval($cascadingslink[$i]['poscascadings']);
 				$foundi2=0;
@@ -843,6 +885,18 @@ class IndexReloaded {
 				$cascadingss[$icss]['poscascadings'] = $cascadingslink[$i]['poscascadings'];
 				$cascadingss[$icss]['cssnoprocessing'] = $cascadingslink[$i]['cssnoprocessing'];
 				$icss++;
+				if (($i+1)==$cascadingslinkcount) {
+					for ($ib=$lastib;$ib<$cascadingsicount;$ib++) {
+							$lastib=$ib+1;
+							$cascadingss[$icss]['css'] = $cascadingsi[$ib]['css'];
+							$cascadingss[$icss]['inlinestyle'] = $cascadingsi[$ib]['inlinestyle'];
+							$cascadingss[$icss]['poscascadings'] = $cascadingsi[$ib]['poscascadings'];
+							$cascadingss[$icss]['cssnoprocessing'] = $cascadingsi[$ib]['cssnoprocessing'];
+							$icss++;
+					}
+					
+				}
+				
 			}
 			
 		}	
@@ -922,7 +976,8 @@ class IndexReloaded {
 			for ($i=0;$i<$scriptscnt;$i++) {
 				if ((str_replace('src="//', '', $scripts[$i]['script']) != $scripts[$i]['script']) ||
 						(str_replace('src="https:', '', $scripts[$i]['script']) != $scripts[$i]['script']) ||
-						(str_replace('src="http:', '', $scripts[$i]['script']) != $scripts[$i]['script'])){
+						(str_replace('src="http:', '', $scripts[$i]['script']) != $scripts[$i]['script']) ||
+						(str_replace('src="//', '', $scripts[$i]['script']) != $scripts[$i]['script'])){
 					if ($externalmode ==0) {
 						$scriptblock++;
 					}
@@ -977,6 +1032,7 @@ class IndexReloaded {
 		}
 		// end | build JS groups
 		// Do the grouping on the CSS
+		
 		if ($this->dontmodcss == 0) {
 			$condifscnt =count($condifs);
 			$cascadingsscnt =count($cascadingss);
@@ -1049,7 +1105,11 @@ class IndexReloaded {
 			$mediatype = '';
 			for ($i=0; $i<$cascadingsscnt; $i++) {
 				if ((str_replace('src="https:', '', $cascadingss[$i]['css']) != $cascadingss[$i]['css']) ||
-						(str_replace('src="http:', '', $cascadingss[$i]['css']) != $cascadingss[$i]['css'])){
+						(str_replace('src="http:', '', $cascadingss[$i]['css']) != $cascadingss[$i]['css']) ||
+						(str_replace('src="//', '', $cascadingss[$i]['css']) != $cascadingss[$i]['css']) ||
+						(str_replace('href="//', '', $cascadingss[$i]['css']) != $cascadingss[$i]['css']) ||
+						(str_replace('href="http:', '', $cascadingss[$i]['css']) != $cascadingss[$i]['css']) ||
+						(str_replace('href="https:', '', $cascadingss[$i]['css']) != $cascadingss[$i]['css'])) {
 					if ($externalmode == 0) {
 						$cascadingss[$i]['css'] = "\n". $cascadingss[$i]['css'];
 						$cssblock++;
@@ -1136,7 +1196,6 @@ class IndexReloaded {
 			
 		}
 		// end | Do the grouping on the CSS
-		
 		$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebug);
 		$starttimedebug = microtime(TRUE);
 		$debuginfo .= '<p><span>base analyze index.php: '. round($tdifftolastrun, 0) . ' ms</span><br />';
@@ -1235,6 +1294,8 @@ class IndexReloaded {
 			}
 			
 		}
+		
+		//return json_encode($scripts, JSON_PRETTY_PRINT);
 		// end | now build filenames for the master file found from files in blocks and make new scripts array		
 	
 		// now build filenames for blockfiles and make new css array
@@ -1341,7 +1402,8 @@ class IndexReloaded {
 			}
 				
 		}
-
+		
+		
 		// end | build filenames for blockfiles and make new css array
 
 		$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebug);
@@ -1611,21 +1673,31 @@ class IndexReloaded {
 					$starttimedebugmerge = microtime(TRUE);
 					$debugmergetime = 0;
 				}	
-								
+							
 				for ($i=0;$i<$groupedcsscount;$i++) {
 					if ($groupedcss[$i]['md5css'] != '') {
 						if ((!file_exists($checkfolderpath . DIRECTORY_SEPARATOR . $groupedcss[$i]['md5css'])) || ($this->forceNewFiles == TRUE)) {							
 							$groupedfilescount=count($groupedcss[$i]['file']);
 							$filecontent='';
+							//return json_encode($groupedcss, JSON_PRETTY_PRINT);
 							for ($j=0;$j<$groupedfilescount;$j++) {
 								$writecsstext='';
 								$checkfile= $groupedcss[$i]['file'][$j][0];
+								
 								if ($groupedcss[$i]['file'][$j][0] == 'inline') {
+									//$groupedcss[$i]['file'][$j][1] = str_replace('?oiqpwt', '', $groupedcss[$i]['file'][$j][1]);
+									$groupedcss[$i]['file'][$j][1] = str_replace("\n", '', $groupedcss[$i]['file'][$j][1]);
 									$writecsstext = str_replace('</style>', '', $groupedcss[$i]['file'][$j][1]);
+									//
 									$writecsstextarr = explode('>', $writecsstext);
-									$writecsstextarr[0] = 'inlinestarttag';
-									$writecsstext = str_replace('inlinestarttag>', "\n", implode('>', $writecsstextarr)) . "\n";
+									if (count($writecsstextarr) > 1) {
+										$writecsstextarr[0] = 'inlinestarttag';
+										$writecsstext = str_replace('inlinestarttag>', "\n", implode('>', $writecsstextarr)) . "\n";
+									}
+									//
+									//return $j . ', ' . $writecsstext;
 									$writecsstext = $this->handleCssAtImportFiles($writecsstext, '', array(), 0);
+									//return $j . ', ' . $writecsstext;
 								} elseif (file_exists($checkfile)) {
 									$writecsstext = file_get_contents($checkfile);
 
@@ -1638,7 +1710,9 @@ class IndexReloaded {
 									$checkpath= $groupedcss[$i]['file'][$j][1];
 									$checkpatharr = explode('/', $checkpath);
 									$countcheckpatharr = count($checkpatharr);
+									//return $j . ', ' . $writecsstext;
 									$writecsstext = $this->handleCssAtImportFiles($writecsstext, $checkpath, $checkpatharr, $countcheckpatharr);
+	 								//return $j . ', ' . $writecsstext;
 	 								$lencss = $lencss + strlen($writecsstext);
 									$hypos='';
 									$writecsstextarr = explode('url(', $writecsstext);
@@ -1709,6 +1783,8 @@ class IndexReloaded {
 									If ((strlen($this->secret) != 20) && (strlen($this->secret) != 19)) {
 										$unsetgenerateCSSbelowTheFold = TRUE;
 									} else {
+										
+										//return json_encode($groupedcss, JSON_PRETTY_PRINT);
 										$filecontents = $this->splitCSSBelowAboveTheFold($filecontent);
 									}
 									
@@ -1826,9 +1902,13 @@ class IndexReloaded {
 							} else {
 								$filenamelink = '/' . $this->typo3tempsubfolder . '/css/' .	$groupedcss[$i]['md5css'];
 							}
+
+							$path = realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
+							str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filenamelink;
 							
-							$path = $this->resolveBackPath($this->dirname(PATH_thisScript) . $filenamelink);
 							$sizeofcss = filesize($path);
+							
+							
 							if ($sizeofcss > 0) {
 								if ($this->inlineCSSaboveTheFold == TRUE) {
 									$modfilenamelink = file_get_contents($path);
@@ -1843,11 +1923,11 @@ class IndexReloaded {
 						} else {
 							$modfilenamelink = '/' . $this->typo3tempsubfolder . '/css/' .	str_replace($foldingmd5filename, '', $groupedcss[$i]['md5css']);
 						}
-						
+						//
 						if ($modfilenamelink != '') {
 							if ($this->inlineCSSaboveTheFold == TRUE) {
 								$groupedcss[$i]['cssoutput'] = $ifstate . '<style>' . $modfilenamelink . '</style>' . $endifstate . "\n";
-															} else {
+							} else {
 								$groupedcss[$i]['cssoutput'] = $ifstate . '<link rel="stylesheet" type="text/css" href="' . $modfilenamelink . '" />' . $endifstate . "\n";
 							}
 						} else {
@@ -1875,6 +1955,7 @@ class IndexReloaded {
 							}
 							
 							$modfilenamelink = $this->createVersionNumberedFilename($filenamelink, TRUE);
+							
 							$groupedcss[$i]['cssoutputbelow'] = $ifstate . '<link rel="stylesheet" type="text/css" href="' . $modfilenamelink . '" />' . $endifstate . "\n";
 							
 						} else {
@@ -2744,6 +2825,8 @@ class IndexReloaded {
 		$writecsstextarr = array();
 		$writecsstextarr = explode('@import', $writecsstext);
 		$writecsstextarrcount=count($writecsstextarr);
+		$writecsstextout = '';
+		$initialcss = $writecsstextarr[0];
 		for ($q=1;$q<$writecsstextarrcount;$q++) {
 			$hypos='';
 			$writecsstextqarr = array();
@@ -2751,6 +2834,13 @@ class IndexReloaded {
 			$writecsstextqarr = explode(';', $writecsstextarr[$q]);
 			$writecsstextqarr[0] = str_replace('#url(', 'url(', $writecsstextqarr[0]);
 			$fullimportelement= $writecsstextqarr[0] . ';';
+			$remainingcss = '';
+			if (count($writecsstextqarr) ==2) {
+				if ($writecsstextqarr[1] !='') {
+					$remainingcss = $writecsstextqarr[1];
+				}
+			}
+			
 			if (substr(ltrim($writecsstextqarr[0]), 0, 1) == '\'') {
 				$hypos = '\'';
 				$writecsstextqarr[0] = substr(ltrim($writecsstextqarr[0]), 1);
@@ -2778,9 +2868,15 @@ class IndexReloaded {
 			}
 			
 			$urltocheck = $writecsstextarr2[0];
+			
 			$urltocheckout = str_replace('https://', '', $urltocheck);
 			$urltocheckout = str_replace('http://', '', $urltocheckout);
+			
 			if ($urltocheckout == $urltocheck)  {
+				$urltocheck = str_replace('url(', '', $urltocheck);
+				$urltocheck = str_replace('"', '', $urltocheck);
+				$urltocheck = str_replace("'", '', $urltocheck);
+				$urltocheck = str_replace(')', '', $urltocheck);
 				if (substr($urltocheck, 0, 1) != '/') {
 
 					$checkuppatharr = explode('../', $urltocheck);
@@ -2799,6 +2895,9 @@ class IndexReloaded {
 					}
 
 					$writecsstextarr2[0]= $urltocheck;
+					
+					$atimporttoreplace= '@import' . $fullimportelement;
+				} else {
 					$atimporttoreplace= '@import' . $fullimportelement;
 				}
 
@@ -2819,15 +2918,20 @@ class IndexReloaded {
 			$rawfilestrarr=explode('?', realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '', str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filefromroot);
 			$rawfilestr=$rawfilestrarr[0];
 			$fileimport = str_replace(':\\', ':\\\\', $rawfilestr);
-			$writecssimporttext = '';
+			
+			//return $fileimport;
 			if (file_exists($fileimport)) {
-				$writecssimporttext = file_get_contents($fileimport);
+				$writecsstextout .= file_get_contents($fileimport) . "\n";
+			} else {
+				$writecsstextout .= $atimporttoreplace . "\n";
 			}
-
-			$writecsstext = str_replace($atimporttoreplace, $writecssimporttext, $writecsstext);
+			
+			$writecsstextout .= $remainingcss;
+			
 		}
 		
-		return $writecsstext;
+		$writecsstextout = $initialcss . $writecsstextout;
+		return $writecsstextout;
 	}
 	
 	/**
@@ -2852,7 +2956,11 @@ class IndexReloaded {
 	 */
 	protected function createVersionNumberedFilename($file, $forceQueryString = FALSE) {
 		$lookupFile = explode('?', $file);
-		$path = $this->resolveBackPath($this->dirname(PATH_thisScript) . '/' . $lookupFile[0]);
+		
+		$path = realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
+				str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $lookupFile[0];
+		
+		
 		$mode = $this->createVersionNumberedFilenamemode;
 		$modequerystring = FALSE;
 		if ($mode === 'embed') {
@@ -2898,75 +3006,8 @@ class IndexReloaded {
 	
 		return $fullName;
 	}
-	
-	/**
-	 * Resolves "../" sections in the input path string.
-	 * For example "fileadmin/directory/../other_directory/" will be resolved to "fileadmin/other_directory/"
-	 *
-	 * @param	string		$pathStr File path in which "/../" is resolved
-	 * @return	string
-	 */
-	private function resolveBackPath($pathStr) {
-		$parts = explode('/', $pathStr);
-		$output = array();
-		$c = 0;
-		foreach ($parts as $pV) {
-			if ($pV == '..') {
-				if ($c) {
-					array_pop($output);
-					$c--;
-				} else {
-					$output[] = $pV;
-				}
-				
-			} else {
-				$c++;
-				$output[] = $pV;
-			}
-			
-		}
+
 		
-		$ret = implode('/', $output);
-		return $ret;
-	}
-	
-	/**
-	 * Returns the directory part of a path without trailing slash
-	 * If there is no dir-part, then an empty string is returned.
-	 * Behaviour:
-	 *
-	 * '/dir1/dir2/script.php' => '/dir1/dir2'
-	 * '/dir1/' => '/dir1'
-	 * 'dir1/script.php' => 'dir1'
-	 * 'd/script.php' => 'd'
-	 * '/script.php' => ''
-	 * '' => ''
-	 *
-	 * @param	string		$path Directory name / path
-	 * @return	string		Processed input value. See function description.
-	 */
-	private function dirname($path) {
-		$p = $this->revExplode('/', $path, 2);
-		$ret = count($p) == 2 ? $p[0] : '';
-		return $ret;
-	}
-	
-	/**
-	 * Reverse explode which explodes the string counting from behind.
-	 * Thus tx_div2007_div::revExplode(':','my:words:here',2) will return array('my:words','here')
-	 *
-	 * @param	string		$delimiter Delimiter string to explode with
-	 * @param	string		$string The string to explode
-	 * @param	integer		$count Number of array entries
-	 * @return	array		Exploded values
-	 */
-	private function revExplode($delimiter, $string, $count = 0) {
-		$explodedValues = explode($delimiter, strrev($string), $count);
-		$explodedValues = array_map('strrev', $explodedValues);
-		$ret = array_reverse($explodedValues);
-		return $ret;
-	}
-	
 	/**
 	 * Used to determine pagename outside TYPO3
 	 * Url-name of the page like 'home.html?L=2&no_cache=1&purge_cache=0&objecttype=someobjecttype&id=4546'
@@ -3113,6 +3154,25 @@ class IndexReloaded {
 			print $infomessage; exit;
 		}
 
+	}
+	// Function to get the client IP address
+	private function get_client_ip() {
+		$ipaddress = '';
+		if (getenv('HTTP_CLIENT_IP'))
+			$ipaddress = getenv('HTTP_CLIENT_IP');
+		else if(getenv('HTTP_X_FORWARDED_FOR'))
+			$ipaddress = getenv('HTTP_X_FORWARDED_FOR');
+		else if(getenv('HTTP_X_FORWARDED'))
+			$ipaddress = getenv('HTTP_X_FORWARDED');
+		else if(getenv('HTTP_FORWARDED_FOR'))
+			$ipaddress = getenv('HTTP_FORWARDED_FOR');
+		else if(getenv('HTTP_FORWARDED'))
+			$ipaddress = getenv('HTTP_FORWARDED');
+		else if(getenv('REMOTE_ADDR'))
+			$ipaddress = getenv('REMOTE_ADDR');
+		else
+			$ipaddress = 'UNKNOWN';
+		return $ipaddress;
 	}
 }
 ?>
