@@ -31,3 +31,4 @@ needed to change a value.
     Cssfolding/Index
     Debug/Index
     Api/Index
+    Onlyoutsidetypo3/Index

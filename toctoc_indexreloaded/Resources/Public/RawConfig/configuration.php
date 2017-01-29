@@ -41,6 +41,8 @@ $ret = array (
 	'asynchLastJS' => 1,
 // Enable CSS-file processing
 	'optProcesscssfiles' => 1,
+// Try to fix bad CSS, changes ' to ", removes bad // in links, eliminates bad typo in CSS: Check out the PHP-code for tryFixBadCSS if you want to add your own cleansing code 
+	'tryFixBadCSS' => 0,
 // Exclude list for Processing: parts of JS or CSS-filenames, that should be excluded for processing, for inline scripts/styles a part of the text is ok for identification
 	'excludesProcessing' => 'var pageid =, tx-tc-shrrr-',
 // Include list for Processing: parts of JS or CSS-filenames, that must be included for processing anyway. includes overwrite the excludes. This good for more detailed filtering
@@ -81,8 +83,11 @@ $ret = array (
 	'APIKey' => '',
 // API-Server: Server hosting the APIkeys, normally www.toctoc.ch
 	'APIServer' => 'www.toctoc.ch',
-// The debug-windows only shows up if your IP matches this debugIP
+// The debug-windows only shows up if your IP matches this debugIP, '*' allows all
 	'DebugIP' => '',
+// Forces a baseURL for the site, used to identify links to external files a hosted on same server.
+// example 'http://specificsubdomain.toctoc.ch'
+	'forceBaseURL' => '',
 );
 
 return $ret;

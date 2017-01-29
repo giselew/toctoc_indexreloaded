@@ -24,6 +24,11 @@ asynchLastJS                          boolean     Load last JS file asynchronous
 ------------------------------------  ----------  -------------------------------------------------------  ---------------------------------
 optProcesscssfiles                    boolean     Enable CSS-file processing                               1  
 ------------------------------------  ----------  -------------------------------------------------------  ---------------------------------
+tryFixBadCSS                          boolean     Try to fix bad CSS: Changes ' to ", removes bad //       0
+						  in links, eliminates bad typo in CSS: Check out the 
+						  PHP-code for tryFixBadCSS if you want to add your own 
+						  cleansing code  
+------------------------------------  ----------  -------------------------------------------------------  ---------------------------------
 excludesProcessing                    string      Exclude list for Processing:                             var pageid =,tx-tc-shrrr-
                                                   parts of JS or CSS-filenames, that should be excluded 
                                                   for processing, for inline scripts/styles a part 

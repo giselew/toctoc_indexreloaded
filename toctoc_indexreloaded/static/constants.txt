@@ -34,14 +34,17 @@ plugin.tx_toctoc_indexreloaded_pi1 {
 	
 	# cat=tx_toctoc_indexreloaded_pi1 //104; type=boolean; label=Enable CSS-file processing
 	optProcesscssfiles = 1
-
-	# cat=tx_toctoc_indexreloaded_pi1 //105; type=string; label=Exclude list for Processing: parts of JS or CSS-filenames, that should be excluded for processing, for inline scripts/styles a part of the text is ok for identification
+	
+	# cat=tx_toctoc_indexreloaded_pi1 //105; type=boolean; label=Try to fix bad CSS: Changes ' to ", removes bad // in links, eliminates bad typo in CSS: Check out the PHP-code for tryFixBadCSS if you want to add your own cleansing code 
+    tryFixBadCSS = 0
+    
+	# cat=tx_toctoc_indexreloaded_pi1 //106; type=string; label=Exclude list for Processing: parts of JS or CSS-filenames, that should be excluded for processing, for inline scripts/styles a part of the text is ok for identification
 	excludesProcessing = var pageid =, tx-tc-shrrr-
 
-	# cat=tx_toctoc_indexreloaded_pi1 //106; type=string; label=Include list for Processing: parts of JS or CSS-filenames, that must be included for processing anyway. includes overwrite the excludes. This good for more detailed filtering
+	# cat=tx_toctoc_indexreloaded_pi1 //107; type=string; label=Include list for Processing: parts of JS or CSS-filenames, that must be included for processing anyway. includes overwrite the excludes. This good for more detailed filtering
 	includesProcessing = 
 	
-	# cat=tx_toctoc_indexreloaded_pi1 //107; type=string; label=Path to processed files: CSS and JS files will be written in this directory
+	# cat=tx_toctoc_indexreloaded_pi1 //108; type=string; label=Path to processed files: CSS and JS files will be written in this directory
 	typo3tempsubfolder = typo3temp/TocTocIndexReloaded
 
 	# cat=tx_toctoc_indexreloaded_pi1 //201; type=boolean; label=CSS will be compressed	
