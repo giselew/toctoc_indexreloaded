@@ -42,3 +42,7 @@
 	  Up now a bunch of tests have been made: 
 	  Bootstrap package with manual mods, old Introduction Package, a site with manually made CSS, running TYPO3 4.7, a site using Twitter Bootstrap for a custom theme - 
 	  TYPO3 extensions toctoc_comments, tt_news, news, indexed_search. Works fine.
+2017-01-31  Gisèle Wendl  <gisele.wendl@toctoc.ch>
+	* Release of version 1.9.9 - This is a "github only" beta-version for Version 2.0.0
+	* Free API key for 30 days available on https://www.toctoc.ch/de/apikey/
+	* Please see git hub for comments on changes https://github.com/giselew/toctoc_indexreloaded/commits/master
