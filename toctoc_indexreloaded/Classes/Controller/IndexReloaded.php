@@ -25,7 +25,24 @@ namespace GiseleWendl\ToctocIndexreloaded\Controller;
  * [CLASS/FUNCTION INDEX of SCRIPT]
  *
  *
- * TOTAL FUNCTIONS: 5
+ *
+ *   61: class IndexReloaded
+ *  180:     public function contentPostProc($buffer, $userUid = 0, $relativePathToExtension = '', $showDebugWindow = FALSE,
+			$createVersionNumberedFilenamemode = 'querystring', $opts = array(), $TSFEid = 0)
+ * 2541:     private function foldingCSSreportentry($entryname, $filecontents, $mediacorrectrules = FALSE)
+ * 2607:     private function mergeCSS($soucedirectory, $filename, $foldingmd5, $filecontent, $filecontentbelowthefold, $filecontentoPosabove, $filecontentoPosbelow)
+ * 2754:     protected function htmlFoldMeta($bufferin)
+ * 2918:     protected function splitCSSBelowAboveTheFold($filecontent)
+ * 3000:     protected function crunchcss($buffer, $minimal = FALSE)
+ * 3030:     protected function isCompressed($buffer)
+ * 3051:     protected function compressjs($buffer, $doMinify, $minimal = FALSE)
+ * 3084:     protected function handleCssAtImportFiles($writecsstext, $checkpath, $checkpatharr, $countcheckpatharr)
+ * 3211:     protected function createVersionNumberedFilename($file, $forceQueryString = FALSE)
+ * 3272:     protected function currentPageName()
+ * 3312:     protected function apiCall($secret, $datain)
+ * 3418:     private function get_client_ip()
+ *
+ * TOTAL FUNCTIONS: 14
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -33,7 +50,8 @@ namespace GiseleWendl\ToctocIndexreloaded\Controller;
 if (!class_exists('JSMinTtirl')) {
 	require(realpath(str_replace('Classes\Controller', '', str_replace('Classes/Controller', '', dirname(__FILE__)))) . DIRECTORY_SEPARATOR .
 			str_replace('/', DIRECTORY_SEPARATOR, 'Resources/Public/Contrib/JSmin/jsminttirl.php'));
-} 
+}
+
 /**
  * Toctoc Index Reloaded
  *
@@ -70,12 +88,12 @@ class IndexReloaded {
 	protected $asynchLastJS = FALSE;
 	// enable file processing
 	protected $forceNewFiles = FALSE;
-	// force creation of new files.	
+	// force creation of new files.
 	// You can force new files (CSS and JS) with URL-Parameter ?forceNewFiles=1 as well.
-	
+
 	protected $doCrunchCSS = TRUE;
 	// CSS will be compressed
-	
+
 	protected $generateCSSbelowTheFold = TRUE;
 	protected $mergeCSSbelowTheFold = TRUE;
 	// CSS will be split in above and below the fold
@@ -86,7 +104,7 @@ class IndexReloaded {
 	protected $tagsToKeepAboveTheFold = array();
 	protected $classesToKeepAboveTheFold = array();
 	protected $IDsToKeepAboveTheFold = array();
-	
+
 	protected $mediaFromAboveToBelow = array();
 	protected $mediaBelow = array();
 	protected $mediaAbove = array();
@@ -94,7 +112,7 @@ class IndexReloaded {
 	protected $mediaNewAbove = array();
 	protected $mediaOldBelow = array();
 	protected $mediaOldAbove = array();
-	
+
 	protected $moveAtMedia = FALSE;
 	protected $freezeFolding = FALSE;
 	protected $inlineCSSaboveTheFold = FALSE;
@@ -103,20 +121,20 @@ class IndexReloaded {
 	protected $countUnionMetaNewElements = 0;
 	protected $countUnionMetabeforeDrop = 0;
 	protected $countUnionMetaafterDrop = 0;
-	
+
 	protected $pruneHTMLBaseToDisk = FALSE;
 	protected $pruneHTMLBase = '';
-	
+
 	protected $makefoldingCSSreport = FALSE;
 	protected $foldingCSSreport = array();
 	protected $iFCSSRep = -1;
 	protected $lenoutputcssabove = 0;
 	protected $lenoutputcssbelow = 0;
-	
-	protected $checkDupesOnFoldingMerge = FALSE;	
-	
+
+	protected $checkDupesOnFoldingMerge = FALSE;
+
 	// end of CSS above-below the fold variables
-	
+
 	protected $doCompressJs = TRUE;
 	// JS will be compressed
 	protected $optMinifyjsfiles = TRUE;
@@ -125,7 +143,7 @@ class IndexReloaded {
 	// You can force the debug window with URL-Parameter ?showDebugWindow=1 as well.
 	protected $showDebugWindowBodyTag = '<body>';
 	// the html of the debug windows is appended to this tag
-	protected $showOptionsInDebugWindow = FALSE;	
+	protected $showOptionsInDebugWindow = FALSE;
 	protected $nominifyarr = array();
 	protected $productionMode = FALSE;
 
@@ -133,35 +151,36 @@ class IndexReloaded {
 	protected $createVersionNumberedFilenamemode = 'querystring';
 	protected $TSFEid = 0;
 	protected $userUid = 0;
-	
+
 	protected $extensionrelwinpath = 'typo3conf\ext\toctoc_indexreloaded';
 	protected $extensionrelpath = 'typo3conf/ext/toctoc_indexreloaded';
-	
+
 	public $donExtkey = 'toctoc_indexreloaded';
 	public $donExtension = 'toctoc_indexreloaded';
 	public $donExtversion = '193';
 	public $donationserver = 'www.toctoc.ch';
 	public $secret = '';
 	public $runtimeTtIrl = 0;
-	
+
 	// try fix bad CSS
 	protected $tryFixBadCSS = FALSE;
-	
+
 	// OPTIONS END
-	
+
 	/**
 	 * Parsing HTML content and reorganize CSS and JS
 	 *
 	 * @param	string		$buffer: HTML to be post processed
-	 * @param	int			$userUid: Id of the current user, 0 if not logged in
+	 * @param	int		$userUid: Id of the current user, 0 if not logged in
 	 * @param	string		$relativePathToExtension: when called from outside TYPO3 then relative path to extension comes with this variable
 	 * @param	boolean		$showDebugWindow: If the debug-window caqn be shown (filtered with TYPO3 devip mask)
 	 * @param	string		$createVersionNumberedFilenamemode: ...
 	 * @param	array		$opts: Legacey options from extension manager configuration
-	 * @param	int			$TSFEid: TYPO3-pageid
+	 * @param	int		$TSFEid: TYPO3-pageid
 	 * @return	string		$buffer, modified
 	 */
-	public function contentPostProc($buffer, $userUid = 0, $relativePathToExtension = '', $showDebugWindow = FALSE, $createVersionNumberedFilenamemode = 'querystring', $opts = array(), $TSFEid = 0) {
+	public function contentPostProc($buffer, $userUid = 0, $relativePathToExtension = '', $showDebugWindow = FALSE,
+			$createVersionNumberedFilenamemode = 'querystring', $opts = array(), $TSFEid = 0) {
 		$lenbuffer = strlen($buffer);
 		$starttimedebug = microtime(TRUE);
 		$starttimedebugcallback = $starttimedebug;
@@ -180,7 +199,7 @@ class IndexReloaded {
 		} else {
 			$baseurl = 'http://'. $_SERVER['SERVER_NAME'];
 		}
-		
+
 		if (count($opts) < 3) {
 			$opts = require_once(realpath(str_replace('Classes\Controller', '', str_replace('Classes/Controller', '', dirname(__FILE__)))) . DIRECTORY_SEPARATOR .
 			str_replace('/', DIRECTORY_SEPARATOR, 'Resources/Public/RawConfig/configuration.php'));
@@ -190,44 +209,44 @@ class IndexReloaded {
 			$this->extensionrelpath = str_replace('\\', '/', $relativePathToExtension);
 			$this->extensionrelwinpath = str_replace('/', '\\', $relativePathToExtension);
 			$this->TSFEid = $this->currentPageName();
-			
+
 			if ($opts['forceBaseURL'] != '') {
 				$baseurl = $opts['forceBaseURL'];
 			}
-			
+
 			if ($opts['DebugIP'] != '') {
 				if ($opts['DebugIP'] == '*') {
 					if (intval($opts['showDebugWindow']) == 1) {
 						$this->showDebugWindowCSS = TRUE;
 						$this->showDebugWindow = TRUE;
-					
+
 					}
-					
+
 				} else {
 					$ip = $this->get_client_ip();
 					if ($opts['DebugIP'] == $ip) {
 						if (intval($opts['showDebugWindow']) == 1) {
 							$this->showDebugWindowCSS = TRUE;
 							$this->showDebugWindow = TRUE;
-	
+
 						}
-								
+
 					}
-					
+
 				}
-				
+
 			}
-			
+
 		} else {
 			$this->typo3tempsubfolder = $opts['typo3tempsubfolder'];
 		}
-		
+
 		$debuginfolding = '';
 		$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebug);
 		$starttimedebug = microtime(TRUE);
 		$starttimedebugfolding = microtime(TRUE);
 		$debuginfolding .= '<span>Initialize: '. round($tdifftolastrun, 1) . ' ms</span><br />' . $debuginfolding;
-		
+
 		if (count($opts) > 0) {
 			if ($opts['deactivateOnPages'] != '') {
 				if (str_replace($this->TSFEid, '', $opts['deactivateOnPages']) != $opts['deactivateOnPages']) {
@@ -239,102 +258,102 @@ class IndexReloaded {
 							$foundpage = TRUE;
 							break;
 						}
-						
+
 					}
-					
+
 					if ($foundpage == TRUE) {
 						$opts['dontmod'] = 1;
 					}
-			
+
 				}
-				
+
 			}
-			
+
 			$this->mergeCSSbelowTheFold = FALSE;
 			if (intval($opts['generateCSSbelowTheFold']) == 1) {
-				$this->generateCSSbelowTheFold = TRUE;	
-				
+				$this->generateCSSbelowTheFold = TRUE;
+
 				if (intval($opts['inlineCSSaboveTheFold']) == 1) {
-					$this->inlineCSSaboveTheFold = TRUE;	
+					$this->inlineCSSaboveTheFold = TRUE;
 				}
-				
+
 				if (intval($opts['mergeCSSbelowTheFold']) == 1) {
-					$this->mergeCSSbelowTheFold = TRUE;	
+					$this->mergeCSSbelowTheFold = TRUE;
 					if (intval($opts['checkDupesOnFoldingMerge']) == 1) {
-						$this->checkDupesOnFoldingMerge = TRUE;	
+						$this->checkDupesOnFoldingMerge = TRUE;
 					}
-					
+
 				}
-				
+
 				if (intval($opts['showDebugWindow']) == 1) {
 					if (intval($opts['CSSFoldingReport']) == 1) {
 						$this->makefoldingCSSreport = TRUE;
 					}
-					
+
 				}
-				
+
 			} else {
 				if (isset($opts['generateCSSbelowTheFold'])) {
 					$this->generateCSSbelowTheFold = FALSE;
 				}
-				
+
 			}
 			// DebugWindow
 			$thisshowDebugWindowwasTRUE = FALSE;
 			if ($this->showDebugWindow == TRUE) {
 				$thisshowDebugWindowwasTRUE = TRUE;
 			}
-				
+
 			if (intval($opts['showDebugWindow']) == 0) {
 				$this->showDebugWindow = FALSE;
 				$this->showDebugWindowCSS = FALSE;
 			}
-			
+
 			if (intval($opts['showOptionsInDebugWindow']) == 1) {
 				$this->showOptionsInDebugWindow = TRUE;
 			} else {
 				if (isset($opts['showOptionsInDebugWindow'])) {
 					$this->showOptionsInDebugWindow = FALSE;
 				}
-			
+
 			}
-			
+
 			$foldingmd5 = '';
 			$foldingmd5filename = '';
-			if ($this->generateCSSbelowTheFold == TRUE) {				
-				$this->moveAtMedia = TRUE;				
+			if ($this->generateCSSbelowTheFold == TRUE) {
+				$this->moveAtMedia = TRUE;
 				if (trim($opts['tagsToKeepAboveTheFold']) != '') {
 					$opts['tagsToKeepAboveTheFold'] = str_replace(' ', '', $opts['tagsToKeepAboveTheFold']);
 					$this->tagsToKeepAboveTheFold = explode(',', $opts['tagsToKeepAboveTheFold']);
 				}
-				
+
 				if (trim($opts['classesToKeepAboveTheFold']) != '') {
 					$opts['classesToKeepAboveTheFold'] = str_replace(' ', '', $opts['classesToKeepAboveTheFold']);
 					$this->classesToKeepAboveTheFold = explode(',', $opts['classesToKeepAboveTheFold']);
 				}
-				
+
 				if (trim($opts['IDsToKeepAboveTheFold']) != '') {
 					$opts['IDsToKeepAboveTheFold'] = str_replace(' ', '', $opts['IDsToKeepAboveTheFold']);
 					$this->IDsToKeepAboveTheFold = explode(',', $opts['IDsToKeepAboveTheFold']);
 				}
-				
+
 				if (intval($opts['freezeFolding']) != 0) {
-					$this->freezeFolding = TRUE;					
+					$this->freezeFolding = TRUE;
 				}
 				if ((intval($opts['mergeCSSbelowTheFold']) == 0) && ($this->freezeFolding == TRUE)) {
-					$foldingmd5 = $this->htmlFoldMeta($buffer);	
+					$foldingmd5 = $this->htmlFoldMeta($buffer);
 					$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebugfolding);
 					$debuginfolding .=  '<span>Folding element cloud: '. round($tdifftolastrun, 1) . ' ms</span><br />';
 					$foldingmd5filename = '-' . $foldingmd5;
 					$starttimedebug = microtime(TRUE);
 				} elseif ($this->freezeFolding == FALSE) {
-					$foldingmd5 = $this->htmlFoldMeta($buffer);	
+					$foldingmd5 = $this->htmlFoldMeta($buffer);
 					$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebugfolding);
 					$debuginfolding .=  '<span>Folding element cloud: '. round($tdifftolastrun, 1) . ' ms</span><br />';
 					$foldingmd5filename = '-' . $foldingmd5;
 					$starttimedebug = microtime(TRUE);
 				}
-				
+
 			}
 
 			if (intval($opts['dontmod']) == 1) {
@@ -343,7 +362,7 @@ class IndexReloaded {
 				if (isset($opts['dontmod'])) {
 					$this->dontmod = FALSE;
 				}
-				
+
 			}
 
 			if (trim($opts['showDebugWindowBodyTag']) != '') {
@@ -356,7 +375,7 @@ class IndexReloaded {
 				if (isset($opts['forceNewFiles'])) {
 					$this->forceNewFiles = FALSE;
 				}
-				
+
 			}
 
 			if (intval($opts['dontmodJS']) == 1) {
@@ -365,7 +384,7 @@ class IndexReloaded {
 				if (isset($opts['dontmodJS'])) {
 					$this->dontmodjs = FALSE;
 				}
-				
+
 			}
 
 			if (intval($opts['dontmodCSS']) == 1) {
@@ -374,16 +393,16 @@ class IndexReloaded {
 				if (isset($opts['dontmodCSS'])) {
 					$this->dontmodcss = FALSE;
 				}
-				
+
 			}
-			
+
 			if (intval($opts['optProcessfiles']) == 1) {
 				$this->optProcessfiles = TRUE;
 			} else {
 				if (isset($opts['optProcessfiles'])) {
 					$this->optProcessfiles = FALSE;
 				}
-				
+
 			}
 
 			if (intval($opts['optProcessjsfiles']) == 1) {
@@ -392,14 +411,14 @@ class IndexReloaded {
 				if (isset($opts['optProcessjsfiles'])) {
 					$this->optProcessjsfiles = FALSE;
 				}
-				
+
 			}
-			
+
 			if ($this->optProcessjsfiles == TRUE) {
 				if (intval($opts['asynchLastJS']) == 1) {
 					$this->asynchLastJS = TRUE;
 				}
-				
+
 			}
 
 			if (intval($opts['optMinifyjsfiles']) == 1) {
@@ -409,7 +428,7 @@ class IndexReloaded {
 				if (isset($opts['optMinifyjsfiles'])) {
 					$this->optMinifyjsfiles = FALSE;
 				}
-				
+
 			}
 
 			if (intval($opts['optProcesscssfiles']) == 1) {
@@ -418,13 +437,13 @@ class IndexReloaded {
 				if (isset($opts['optProcesscssfiles'])) {
 					$this->optProcesscssfiles = FALSE;
 				}
-				
+
 			}
-			
+
 			$this->tryFixBadCSS = FALSE;
 			if (intval($opts['tryFixBadCSS']) == 1) {
 				$this->tryFixBadCSS = TRUE;
-			} 				
+			}
 
 			if (intval($opts['doCrunchCSS']) == 1) {
 				$this->doCrunchCSS = TRUE;
@@ -432,9 +451,9 @@ class IndexReloaded {
 				if (isset($opts['doCrunchCSS'])) {
 					$this->doCrunchCSS = FALSE;
 				}
-				
+
 			}
-			
+
 			if (isset($opts['includesarr'])) {
 				$this->includesarr = explode(',', $opts['includesarr']);
 			}
@@ -446,19 +465,19 @@ class IndexReloaded {
 			if (isset($opts['excludesProcessing'])) {
 				$this->excludesprocessingarr = explode(',', $opts['excludesProcessing']);
 			}
-			
+
 			if (isset($opts['includesProcessing'])) {
 				$this->includesprocessingarr = explode(',', $opts['includesProcessing']);
 			}
 
 			$this->nominifyarr = explode(',', $opts['noMinifyjsList']);
-			
+
 			if (intval($opts['productionMode']) == 1) {
 				$this->productionMode = TRUE;
 			}
-			
+
 			// end | get TYPO3 Extension configuration options
-			
+
 			// build some string for debug window, options used
 			$dbgepa = $opts['excludesProcessing'];
 			$dbgipa = $opts['includesProcessing'];
@@ -466,25 +485,25 @@ class IndexReloaded {
 			$dbgia = $opts['includesarr'];
 			$dbgnm = $opts['noMinifyjsList'];
 			// end | build some string for debug window, options used
-			
+
 			// options dependencies
 			if ($this->dontmodjs == TRUE) {
 				$this->optProcessjsfiles = FALSE;
 			}
-			
+
 			if ($this->dontmodcss == TRUE) {
 				$this->optProcesscssfiles = FALSE;
 			}
 			// end | options dependencies
 		}
-		
+
 		// options dependencies
 		if ($this->optMinifyjsfiles == TRUE) {
 			$this->doCompressJs = TRUE;
 		} else {
 			$this->doCompressJs = FALSE;
 		}
-		
+
 		if ($this->productionMode == FALSE) {
 			if (!empty($_GET['forceNewFiles'])){
 				if ($_GET['forceNewFiles'] == '1'){
@@ -498,18 +517,18 @@ class IndexReloaded {
 				}
 
 			}
-			
+
 			if (!empty($_GET['showDebugWindow'])){
 				if ($_GET['showDebugWindow'] == '1'){
 					if ($thisshowDebugWindowwasTRUE == TRUE) {
 						$this->showDebugWindow = TRUE;
 						$this->showDebugWindowCSS = TRUE;
 					}
-					
+
 				}
 
 			}
-			
+
 			if (!empty($_GET['dontModIndex'])){
 				if ($_GET['dontModIndex'] == '1'){
 					$this->dontmod = TRUE;
@@ -556,31 +575,31 @@ class IndexReloaded {
 			$this->optMinifyjsfiles = FALSE;
 			$this->doCrunchCSS = FALSE;
 		}
-		
+
 		if ($this->generateCSSbelowTheFold == TRUE) {
 			$cfgstrCSS = 's';
 		} else {
 			$cfgstrCSS = 'a';
 		}
-			
+
 		if ($this->doCrunchCSS == TRUE) {
 			$cfgstrCSS .= 'c';
 		} else {
 			$cfgstrCSS .= 'u';
 		}
-		
+
 		if (intval($this->userUid) == 0) {
 			$cfgstrCSS .= 'a';
 		} else {
 			$cfgstrCSS .= 'l';
 		}
-		
+
 		// end | options dependencies
-		
+
 		// string with options used for debug window
 
 		$debugopt = '';
-		
+
 
 		if ($this->showDebugWindow == TRUE) {
 			if ($this->showOptionsInDebugWindow == TRUE) {
@@ -610,17 +629,17 @@ class IndexReloaded {
 				$debugopt .= '</span>
 						</div>';
 			}
-			
+
 			$debuginfo = '<div id="tt_ri_dbg">';
 			$debuginfo .= '<span class="tt_ri_dbg_close" title="close debug window" onclick="document.getElementById(\'tt_ri_dbg\').style.display=\'none\';">X</span>
 					<div class="ttirl_title"><strong>TocToc Index Reloaded</strong><br /><span class="ttirlsmall">'.date('F j, Y, g:i a').'</span></div>';
 		}
 		// end | string with options used for debug window
-		
+
 		// inits of vars used in this function
 		$scriptoutput = '';
 		$cssoutput = '';
-		$cssoutbelow = '';		
+		$cssoutbelow = '';
 		$excludarrcnt = count($this->excludesarr);
 		$excludprocessingarrcnt = count($this->excludesprocessingarr);
 		$includesprocessingarrcnt = count($this->includesprocessingarr);
@@ -663,10 +682,10 @@ class IndexReloaded {
 		$buffer = str_replace('HREF="', 'href="', $buffer);
 		$buffer = str_replace('<STYLE', '<style', $buffer);
 		$buffer = str_replace('</STYLE>', '</style>', $buffer);
-		
+
 		$buffer = str_replace('src="' . $baseurl, 'src="', $buffer);
 		$buffer = str_replace('url("' . $baseurl, 'url("', $buffer);
-		
+
 		if ($this->tryFixBadCSS == TRUE) {
 			$corrections = explode('<link ', $buffer);
 			$crcnt = count($corrections);
@@ -675,7 +694,7 @@ class IndexReloaded {
 					$correctionstags = explode('>', $corrections[$i]);
 					$correctionstags[0] = str_replace("'", '"', $correctionstags[0]);
 					$correctionstags[0] = str_replace('  ', ' ', $correctionstags[0]);
-					
+
 					$correctionstypotremens = explode('//', $correctionstags[0]);
 					if (count($correctionstypotremens) >1) {
 						$correctionstags[0] = $correctionstypo . implode('/', $correctionstypotremens);
@@ -686,12 +705,12 @@ class IndexReloaded {
 						$correctionstags[0] = str_replace($baseurl, '', $correctionstags[0]);
 					}
 					$corrections[$i] = implode('>', $correctionstags);
-					
-				} 
-				
+
+				}
+
 				$buffer = implode('<link ', $corrections);
 			}
-			
+
 			$corrections = explode('<style ', $buffer);
 			$crcnt = count($corrections);
 			if ($crcnt > 1) {
@@ -699,12 +718,12 @@ class IndexReloaded {
 					$correctionstags = explode('>', $corrections[$i]);
 					$correctionstags[0] = str_replace("'", '"', $correctionstags[0]);
 					$correctionstags[0] = str_replace('  ', ' ', $correctionstags[0]);
-			
-					
+
+
 					$corrections[$i] = implode('>', $correctionstags);
-			
+
 				}
-					
+
 				$buffer = implode('<style ', $corrections);
 			}
 		}
@@ -734,7 +753,7 @@ class IndexReloaded {
 				} else {
 					$condifs[$i - $skippedi-1]['js'] = 0;
 				}
-	
+
 				if (str_replace('rel="stylesheet"', '', $indexendifarr2[0]) != $indexendifarr2[0]) {
 					$condifs[$i - $skippedi-1]['css'] = 1;
 				} else {
@@ -743,7 +762,7 @@ class IndexReloaded {
 					} else {
 						$condifs[$i - $skippedi-1]['css'] = 0;
 					}
-					
+
 				}
 			} else {
 				$condifs[$i - $skippedi-1]['if'] = '';
@@ -758,7 +777,7 @@ class IndexReloaded {
 			$posif = $posif + strlen('<!--[if');
 		}
 		// end | checkin if-tags for scripts or stylesheets
-		
+
 		// find scripts in the page
 		if ($this->dontmodjs == 0) {
 			$indexjsarr= explode('<script', $buffer);
@@ -785,37 +804,37 @@ class IndexReloaded {
 						$posscriptipliscorr = strlen($indexjsarr[$i-1]);
 						$indexjsarr2= explode('</script>', $indexjsarr[$i]);
 					}
-					
+
 				}
-				
+
 				$excludethis = FALSE;
 				$excludeprocessingthis = FALSE;
 				for($j=0;$j<$excludarrcnt;$j++) {
 					if (str_replace(trim($this->excludesarr[$j]), '', $indexjsarr2[0]) != $indexjsarr2[0]) {
 						$excludethis = TRUE;
 					}
-					
+
 				}
-				
+
 				for($j=0;$j<$excludprocessingarrcnt;$j++) {
 					if (str_replace(trim($this->excludesprocessingarr[$j]), '', $indexjsarr2[0]) != $indexjsarr2[0]) {
 						$excludeprocessingthis = TRUE;
 					}
-					
+
 				}
 
 				for($j=0;$j<$incluedescnt;$j++) {
 					if (str_replace(trim($this->includesarr[$j]), '', $indexjsarr2[0]) != $indexjsarr2[0]) {
 						$excludethis = FALSE;
 					}
-					
+
 				}
 
 				for($j=0;$j<$includesprocessingarrcnt;$j++) {
 					if (str_replace(trim($this->includesprocessingarr[$j]), '', $indexjsarr2[0]) != $indexjsarr2[0]) {
 						$excludeprocessingthis = FALSE;
 					}
-					
+
 				}
 
 				if ($excludethis == FALSE) {
@@ -831,13 +850,13 @@ class IndexReloaded {
 					$cntkeepjs++;
 					$iSkipped++;
 				}
-				
+
 				$posscript = $posscript + $strlenscript;
 			}
-			
+
 		}
 		// end | find scripts in the page
-		
+
 		// find style and stylesheets in the page
 		if ($this->dontmodcss == 0) {
 			$indexcssarr= explode('<link ', $buffer);
@@ -857,28 +876,28 @@ class IndexReloaded {
 						}
 
 					}
-					
+
 					for($j=0;$j<$excludprocessingarrcnt;$j++) {
 						if (str_replace(trim($this->excludesprocessingarr[$j]), '', $indexcssarr2[0]) != $indexcssarr2[0]) {
 							$excludeprocessingthis = TRUE;
 						}
-						
+
 					}
-					
+
 					for($j=0;$j<$incluedescnt;$j++) {
 						if (str_replace(trim($this->includesarr[$j]), '', $indexcssarr2[0]) != $indexcssarr2[0]) {
 							$excludethis = FALSE;
 						}
-						
+
 					}
-					
+
 					for($j=0;$j<$includesprocessingarrcnt;$j++) {
 						if (str_replace(trim($this->includesprocessingarr[$j]), '', $indexcssarr2[0]) != $indexcssarr2[0]) {
 							$excludeprocessingthis = FALSE;
 						}
-						
+
 					}
-					
+
 					if ($excludethis == FALSE) {
 						$cascadingslink[$i-$idown]['css'] = '<link '.$indexcssarr2[0] . '>';
 						$cascadingslink[$i-$idown]['inlinestyle'] = '';
@@ -898,7 +917,7 @@ class IndexReloaded {
 				} else {
 					$idown++;
 				}
-				
+
 				$poscascadings = $poscascadings + strlen('<link ');
 			}
 
@@ -917,11 +936,12 @@ class IndexReloaded {
 				if ($indexcssinlarrwrk != $fulltagarr[0]) {
 					$containcomment = TRUE;
  					$indexcssinlarr2 = explode('--', $fulltagarr[0]);
- 					$inlinestyle = $indexcssinlarr2[1];
+ 					$inlinestyle = $this->crunchcss($indexcssinlarr2[1]);
 
 				} else {
 					$indexcssinlarr2 = explode('>', $fulltagarr[0]);
-					$inlinestyle = $indexcssinlarr2[1];
+
+					$inlinestyle = $this->crunchcss($indexcssinlarr2[1]);
 				}
 
 				$excludethis = FALSE;
@@ -931,14 +951,14 @@ class IndexReloaded {
 					}
 
 				}
-				
+
 				for($j=0;$j<$incluedescnt;$j++) {
 					if (str_replace(trim($this->includesarr[$j]), '', $fulltagarr[0]) != $fulltagarr[0]) {
 						$excludethis = FALSE;
 					}
 
 				}
-				
+
 				if ($excludethis == FALSE) {
 					$cascadingsi[$i-$idown]['css'] = $styletagcomplete;
 					$cascadingsi[$i-$idown]['inlinestyle'] = $inlinestyle;
@@ -948,7 +968,7 @@ class IndexReloaded {
 				}
 
 			}
-			
+
 			$poscascadings = $poscascadings + strlen('<style');
 			$cascadingss = array();
 			$icss=0;
@@ -971,11 +991,11 @@ class IndexReloaded {
 							$cascadingss[$icss]['cssnoprocessing'] = $cascadingsi[$ib]['cssnoprocessing'];
 							$icss++;
 						}
-						
+
 					}
-					
+
 				}
-				
+
 				$cascadingss[$icss]['css'] = $cascadingslink[$i]['css'];
 				$cascadingss[$icss]['inlinestyle'] = $cascadingslink[$i]['inlinestyle'];
 				$cascadingss[$icss]['poscascadings'] = $cascadingslink[$i]['poscascadings'];
@@ -990,19 +1010,19 @@ class IndexReloaded {
 							$cascadingss[$icss]['cssnoprocessing'] = $cascadingsi[$ib]['cssnoprocessing'];
 							$icss++;
 					}
-					
+
 				}
-				
+
 			}
-			
-		}	
+
+		}
 		if ($this->showDebugWindow == TRUE) {
 			$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebug);
 			$starttimedebug = microtime(TRUE);
 			$debuginfo .= '<span>Find scripts and CSS: '. round($tdifftolastrun, 1) . ' ms</span><br />';
 		}
 		// end | find style and stylesheets in the page
-		
+
 		// build JS groups
 
 		if ($this->dontmodjs == 0) {
@@ -1016,18 +1036,18 @@ class IndexReloaded {
 			Do {
 				$icondifs++;
 			} while (($condifs[$icondifs]['js']==0) && ($icondifs<$condifscnt));
-			
+
 			$indexinif = 0;
 			$scriptblock=1;
 			$exludefromprocessing = intval($scripts[0]['scriptnoprocessing']);
-			$forcenewgroupprocessingexcluded = 1;			
+			$forcenewgroupprocessingexcluded = 1;
 			for ($i=0;$i<$scriptscnt;$i++) {
 				if ($exludefromprocessing != intval($scripts[$i]['scriptnoprocessing'])) {
 					$forcenewgroupprocessingexcluded = 0;
 					$exludefromprocessing = intval($scripts[$i]['scriptnoprocessing']);
 					$scriptblock++;
 				}
-				
+
 				$bufferout= str_replace($scripts[$i]['script'], '', $bufferout);
 				if ($condifscnt > 0) {
 					if ($icondifs<$condifscnt) {
@@ -1044,7 +1064,7 @@ class IndexReloaded {
 							}
 
 						}
-						
+
 						if (($condifs[$icondifs]['posif'] < $scripts[$i]['posscript']) && ($condifs[$icondifs]['posif']+$condifs[$icondifs]['iflength']+
 								$condifs[$icondifs]['statementlen'] <
 								$scripts[$i]['posscript'])) {
@@ -1063,16 +1083,16 @@ class IndexReloaded {
 									$scripts[$i]['posscript']) &&
 									($icondifs<$condifscnt));
 						}
-						
+
 					}
 
 				}
-				
+
 				$scripts[$i]['block'] = $scriptblock;
 				$forcenewgroupprocessingexcluded = 1;
 			}
-			
-			$scriptoutput = '';			
+
+			$scriptoutput = '';
 			for ($i=0;$i<$scriptscnt;$i++) {
 				if ((str_replace('src="//', '', $scripts[$i]['script']) != $scripts[$i]['script']) ||
 						(str_replace('src="https:', '', $scripts[$i]['script']) != $scripts[$i]['script']) ||
@@ -1081,7 +1101,7 @@ class IndexReloaded {
 					if ($externalmode ==0) {
 						$scriptblock++;
 					}
-					
+
 					$scripts[$i]['file'] = '';
 					$scripts[$i]['filequerystring'] = '';
 					$externalmode =1;
@@ -1116,7 +1136,7 @@ class IndexReloaded {
 					} else {
 						$isphp = 0;
 					}
-					
+
 					$scripts[$i]['file'] = str_replace(':\\', ':\\\\', $rawfilestr);
 					if (count($rawfilestrarr) > 1) {
 						//$rawfilestr=$rawfilestrarr[1];
@@ -1128,33 +1148,33 @@ class IndexReloaded {
 							if (time()-intval($rawfilestr) > 5) {
 								$scripts[$i]['filequerystring'] = $rawfilestr;
 							}
-							
+
 						}
-						
+
 					}
-					
+
 					if ($isphp == 1) {
 						if ($externalmode == 0) {
 							$scripts[$i]['script'] = "\n". $scripts[$i]['script'];
 							$cssblock++;
 						}
-						
+
 						$externalmode = 1;
 					} else {
 						$externalmode = 0;
 					}
-					
+
 				}
 
 				$scripts[$i]['block'] = $scriptblock . intval($scripts[$i]['block']);
 				$scripts[$i]['external'] = $externalmode;
 				$scriptoutput .= $scripts[$i]['script'] ."\n";
 			}
-			
+
 		}
 		// end | build JS groups
 		// Do the grouping on the CSS
-		
+
 		if ($this->dontmodcss == 0) {
 			$condifscnt =count($condifs);
 			$cascadingsscnt =count($cascadingss);
@@ -1165,11 +1185,11 @@ class IndexReloaded {
 			Do {
 				$icondifs++;
 			} while (($condifs[$icondifs]['css']==0) && ($icondifs<$condifscnt));
-			
+
 			$indexinif = 0;
 			$cssblock=1;
 			$exludefromprocessing = $cascadingss[0]['cssnoprocessing'];
-			$forcenewgroupprocessingexcluded = 1;			
+			$forcenewgroupprocessingexcluded = 1;
 			for ($i=0;$i<$cascadingsscnt;$i++) {
 				if ($exludefromprocessing != intval($cascadingss[$i]['cssnoprocessing'])) {
 					$forcenewgroupprocessingexcluded = 0;
@@ -1214,15 +1234,15 @@ class IndexReloaded {
 						}
 
 					}
-					
+
 				}
-				
+
 				$cascadingss[$i]['block'] = $cssblock;
 				$forcenewgroupprocessingexcluded = 1;
 			}
 
 			$cssoutput = '';
-			$cssoutputbelow = '';			
+			$cssoutputbelow = '';
 			$cssblock= 1;
 			$mediatype = '';
 			for ($i=0; $i<$cascadingsscnt; $i++) {
@@ -1251,7 +1271,7 @@ class IndexReloaded {
 						$cascadingss[$i]['css'] = "\n". $cascadingss[$i]['css'];
 						$cssblock++;
 					}
-					
+
 					// mediatype
 					$mediatype = '';
 					$mediaarr = array();
@@ -1261,7 +1281,7 @@ class IndexReloaded {
 						if (count($newmediatypearr) > 0) {
 							$mediatype = $newmediatypearr[0];
 						}
-						
+
 					}
 
 					if (($mediatype == '') || (trim($mediatype) == 'all')) {
@@ -1276,26 +1296,26 @@ class IndexReloaded {
 					if (substr($pathfromroot, 0, 1) != '/') {
 						$pathfromroot = '/'. $pathfromroot;
 					}
-					
+
 					if (DIRECTORY_SEPARATOR == '\\') {
 						// windows
 						$filefromroot = str_replace('/', '\\', $filearr2[0]);
 					} else {
 						$filefromroot = $filearr2[0];
 					}
-					
+
 					if (substr($filefromroot, 0, 1) != DIRECTORY_SEPARATOR) {
 						$filefromroot = DIRECTORY_SEPARATOR . $filefromroot;
 					}
-					
+
 					$filefromroot = str_replace('.gzip', '', $filefromroot);
 					if (str_replace('.php', '', $filefromroot) != $filefromroot) {
 						$isphp = 1;
 					} else {
 						$isphp = 0;
 					}
-					$rawfilestrarr=explode('?', realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '', 
-							str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . 
+					$rawfilestrarr=explode('?', realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
+							str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) .
 							$filefromroot);
 					$rawfilestr = $rawfilestrarr[0];
 					$cascadingss[$i]['file'] = str_replace(':\\', ':\\\\', $rawfilestr);
@@ -1308,14 +1328,14 @@ class IndexReloaded {
 							if (time()-intval($rawfilestr) > 5) {
 								$cascadingss[$i]['filequerystring'] = $rawfilestr;
 							}
-							
+
 						}
-						
+
 					}
-					
+
 					$cascadingss[$i]['path'] = $pathfromroot;
 					$rootpath = str_replace(':\\', ':\\\\', realpath(str_replace('Classes'. DIRECTORY_SEPARATOR. 'Controller', '', dirname(__FILE__))) . DIRECTORY_SEPARATOR);
-					
+
 					$rootpath = str_replace($this->extensionrelwinpath . DIRECTORY_SEPARATOR , '', str_replace($this->extensionrelpath. DIRECTORY_SEPARATOR, '', $rootpath));
 					$rootpath .= str_replace('/', DIRECTORY_SEPARATOR, substr($_SERVER['REQUEST_URI'], 1));
 					if (($cascadingss[$i]['file'] == $rootpath)
@@ -1324,30 +1344,30 @@ class IndexReloaded {
 							$cascadingss[$i]['css'] = "\n". $cascadingss[$i]['css'];
 							$cssblock++;
 						}
-						
+
 						$externalmode = 1;
 					} elseif ($isphp == 1) {
 						if ($externalmode == 0) {
 							$cascadingss[$i]['css'] = "\n". $cascadingss[$i]['css'];
 							$cssblock++;
 						}
-						
+
 						$externalmode = 1;
 					} else {
 						$externalmode = 0;
 					}
-					
+
 				}
-				
+
 				$cascadingss[$i]['external'] = $externalmode;
 				$cascadingss[$i]['block'] = $cssblock . intval($cascadingss[$i]['block']);
 				$cssoutput .= $cascadingss[$i]['css'] ."\n";
 				if ($this->generateCSSbelowTheFold == TRUE) {
 					$cssoutputbelow .= str_replace('.css', 'below.css', $cascadingss[$i]['css']). "\n";
 				}
-				
+
 			}
-			
+
 		}
 
 		// end | Do the grouping on the CSS
@@ -1356,8 +1376,8 @@ class IndexReloaded {
 			$starttimedebug = microtime(TRUE);
 			$debuginfo .= '<div><span>Regroup found files: '. round($tdifftolastrun, 1) . ' ms</span><br />';
 		}
-		
-		// now build filenames for the master file found from files in blocks and make new scripts array		
+
+		// now build filenames for the master file found from files in blocks and make new scripts array
 		$lastfiletime = 0;
 		clearstatcache();
 		if ($this->dontmodjs == 0) {
@@ -1374,14 +1394,14 @@ class IndexReloaded {
 					} else {
 						$groupedscripts[$g]['md5css'] = '';
 					}
-					
+
 					$tmpmd5str='';
 					$lastfiletime = 0;
 					$g++;
 					$gsub=0;
 					$groupedscripts[$g]['scriptoutput'] = "\n";
 				}
-				
+
 				$groupedscripts[$g]['file'][$gsub] = array();
 				if ($scripts[$i]['file'] == str_replace(':\\', ':\\\\', (realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller',
 						'', str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . DIRECTORY_SEPARATOR))) {
@@ -1392,13 +1412,13 @@ class IndexReloaded {
 					} else {
 						$groupedscripts[$g]['file'][$gsub][1] = $scripts[$i]['script'];
 					}
-					
+
 					$lenInlinejs = $lenInlinejs + strlen($groupedscripts[$g]['file'][$gsub][1]);
 				} else {
 					$cntjs++;
 					$groupedscripts[$g]['file'][$gsub][0] = $scripts[$i]['file'];
 					$groupedscripts[$g]['file'][$gsub][1] = '';
-					
+
 				}
 
 				$groupedscripts[$g]['scriptoutput']  .= $scripts[$i]['script']. "\n";
@@ -1417,26 +1437,26 @@ class IndexReloaded {
 					} else {
 						$tmpmd5str .= 'i' . strlen($scripts[$i]['script']) . '_';
 					}
-					
+
 					$ifstate='';
 					if (isset($scripts[$i]['ifstate'])) {
 						$ifstate=$scripts[$i]['ifstate'] . "\n";
 					}
-					
+
 					$endifstate='';
 					if (isset($scripts[$i]['endifstate'])) {
 						$endifstate=$scripts[$i]['endifstate'] . "\n";
 					}
-					
+
 					if ($groupedscripts[$g]['ifstate'] == '') {
 						$groupedscripts[$g]['ifstate'] = $groupedscripts[$g]['ifstate'] . $ifstate;
 					}
-					
+
 					if ($groupedscripts[$g]['endifstate'] == '') {
 						$groupedscripts[$g]['endifstate'] = $groupedscripts[$g]['endifstate'] . $endifstate;
 					}
-					
-				} 
+
+				}
 
 				$gsub++;
 			}
@@ -1445,16 +1465,16 @@ class IndexReloaded {
 			} else {
 				$groupedscripts[$g]['md5css'] = '';
 			}
-			
+
 			$groupedscriptscount=count($groupedscripts);
 			$scriptoutput='';
 			for ($i=0;$i<$groupedscriptscount;$i++) {
 				$scriptoutput .= $groupedscripts[$i]['scriptoutput'];
 			}
-			
+
 		}
-		
-		// end | now build filenames for the master file found from files in blocks and make new scripts array		
+
+		// end | now build filenames for the master file found from files in blocks and make new scripts array
 		// now build filenames for blockfiles and make new css array
 		if ($this->dontmodcss == 0) {
 			$cssblock = 0;
@@ -1472,7 +1492,7 @@ class IndexReloaded {
 					} else {
 						$groupedcss[$g]['md5css'] = '';
 					}
-					
+
 					$tmpmd5str='';
 					$lastfiletime = 0;
 					$tmpfilename = '';
@@ -1488,19 +1508,19 @@ class IndexReloaded {
 					$cntininecss++;
 					$groupedcss[$g]['file'][$gsub][1] = $cascadingss[$i]['inlinestyle'];
 					$groupedcss[$g]['file'][$gsub][2] = '';
-					
+
 				} else {
 					$groupedcss[$g]['file'][$gsub][0] = $cascadingss[$i]['file'];
 					$cntcss++;
 					$groupedcss[$g]['file'][$gsub][1] = $cascadingss[$i]['path'];
 					$groupedcss[$g]['file'][$gsub][2] = $cascadingss[$i]['mediatype'];
-					
+
 				}
 
 				$groupedcss[$g]['cssoutput']  .=  $cascadingss[$i]['css'] . "\n";
 				if (($cascadingss[$i]['external'] == 0) && ($cascadingss[$i]['cssnoprocessing'] == 0)) {
 					if ($groupedcss[$g]['file'][$gsub][0] != 'inline') {
-						
+
 						if ($cascadingss[$i]['filequerystring'] != '') {
 							$filetime = $cascadingss[$i]['filequerystring'];
 						} else {
@@ -1509,58 +1529,58 @@ class IndexReloaded {
 							} else {
 								$filetime = @filemtime($cascadingss[$i]['file']);
 							}
-							
+
 						}
-						
+
 						$lastfiletime=($lastfiletime+$filetime)/2;
 						$tmpfilename .= '-' . $filetime;
      				} else {
 						$tmpmd5str .= 's'. strlen($cascadingss[$i]['css']) . '_';
 					}
-					
+
 					$ifstate='';
 					if (isset($cascadingss[$i]['ifstate'])) {
 						$ifstate=$cascadingss[$i]['ifstate'] . "\n";
 					}
-					
+
 					$endifstate='';
 					if (isset($cascadingss[$i]['endifstate'])) {
 						$endifstate=$cascadingss[$i]['endifstate'] . "\n";
 					}
-					
+
 					if ($groupedcss[$g]['ifstate'] == '') {
 						$groupedcss[$g]['ifstate'] = $groupedcss[$g]['ifstate'] . $ifstate;
 					}
-					
+
 					if ($groupedcss[$g]['endifstate'] == '') {
 						$groupedcss[$g]['endifstate'] = $groupedcss[$g]['endifstate'] . $endifstate;
 					}
 
-				} 
+				}
 
 				$gsub++;
 			}
-			
+
 			if (($tmpmd5str !='') || ($lastfiletime != 0)) {
 				$groupedcss[$g]['md5css'] = 'f' . md5($tmpfilename . $tmpmd5str) . '-' . $cfgstrCSS . $g . $foldingmd5filename . '.css';
 			} else {
 				$groupedcss[$g]['md5css'] = '';
 			}
-			
+
 			$groupedcsscount=count($groupedcss);
 			$cssoutput='';
 			for ($i=0;$i<$groupedcsscount;$i++) {
 				$cssoutput .= $groupedcss[$i]['cssoutput']. "\n";
 			}
-			
+
 			if ($this->generateCSSbelowTheFold == TRUE) {
 				$cssoutputbelow='';
 				for ($i=0;$i<$groupedcsscount;$i++) {
 					$cssoutputbelow .= str_replace('.css', 'below.css', $groupedcss[$i]['cssoutput']). "\n";
 				}
-				
+
 			}
-				
+
 		}
 
 		// end | build filenames for blockfiles and make new css array
@@ -1569,7 +1589,7 @@ class IndexReloaded {
 			$starttimedebug = microtime(TRUE);
 			$debuginfo .= '<span>Create output file names: '. round($tdifftolastrun, 1) . ' ms</span><br />';
 		}
-		
+
 		if ($this->optProcessfiles == TRUE) {
 			if (DIRECTORY_SEPARATOR == '\\') {
 				// windows
@@ -1591,11 +1611,11 @@ class IndexReloaded {
 				} else {
 					$filefromroot = $this->typo3tempsubfolder;
 				}
-				
+
 				if (substr($filefromroot, 0, 1) != DIRECTORY_SEPARATOR) {
 					$filefromroot = DIRECTORY_SEPARATOR . $filefromroot;
 				}
-				
+
 				mkdir(realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
 							str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filefromroot);
 			}
@@ -1607,11 +1627,11 @@ class IndexReloaded {
 				} else {
 					$filefromroot = $this->typo3tempsubfolder . '/js';
 				}
-				
+
 				if (substr($filefromroot, 0, 1) != DIRECTORY_SEPARATOR) {
 					$filefromroot = DIRECTORY_SEPARATOR . $filefromroot;
 				}
-				
+
 				$checkfolderpath = realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
 						str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filefromroot;
 
@@ -1622,21 +1642,21 @@ class IndexReloaded {
 					} else {
 						$filefromroot = $this->typo3tempsubfolder . '/js';
 					}
-					
+
 					if (substr($filefromroot, 0, 1) != DIRECTORY_SEPARATOR) {
 						$filefromroot = DIRECTORY_SEPARATOR . $filefromroot;
 					}
-					
+
 					mkdir(realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
 					str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filefromroot);
 				}
-				
+
 				$processedfiles=0;
 				if (str_replace(':\\\\', '', $checkfolderpath) == $checkfolderpath) {
 					$checkfolderpath = str_replace(':\\', ':\\\\', $checkfolderpath);
 				}
 
-				for ($i=0;$i<=$groupedscriptscount;$i++) {					
+				for ($i=0;$i<=$groupedscriptscount;$i++) {
 					if ($groupedscripts[$i]['md5css'] != '') {
 						if ((!file_exists($checkfolderpath . DIRECTORY_SEPARATOR . $groupedscripts[$i]['md5css'])) || ($this->forceNewFiles == TRUE)) {
 							$groupedfilescount=count($groupedscripts[$i]['file']);
@@ -1661,22 +1681,22 @@ class IndexReloaded {
 												}
 
 											}
-											
+
 											if ($excludethis == FALSE) {
 												if ($this->isCompressed($writejstext) == FALSE) {
 													$writejstext = $this->compressjs($writejstext, $this->optMinifyjsfiles);
 												} else {
 													$writejstext = $this->compressjs($writejstext, $this->optMinifyjsfiles, TRUE);
 												}
-												
+
 											}
 
 										}
 
 									}
 
-								} elseif (file_exists($checkfile)) {									
-									$writejstext = file_get_contents($checkfile);									
+								} elseif (file_exists($checkfile)) {
+									$writejstext = file_get_contents($checkfile);
 									$lenjs = $lenjs + strlen($writejstext);
 									if (str_replace('function ', '', $writejstext) != $writejstext){
 										$writejstext = file_get_contents($checkfile);
@@ -1691,14 +1711,14 @@ class IndexReloaded {
 													}
 
 												}
-												
+
 												if ($excludethis == FALSE) {
 													if ($this->isCompressed($writejstext) == FALSE) {
 														$writejstext = $this->compressjs($writejstext, $this->optMinifyjsfiles);
 													} else {
 														$writejstext = $this->compressjs($writejstext, $this->optMinifyjsfiles, TRUE);
 													}
-													
+
 												}
 
 											} else {
@@ -1721,7 +1741,7 @@ class IndexReloaded {
 													}
 
 												}
-												
+
 												if ($excludethis == FALSE) {
 													if ($this->isCompressed($writejstext) == FALSE) {
 														$writejstext = $this->compressjs($writejstext, $this->optMinifyjsfiles);
@@ -1739,26 +1759,26 @@ class IndexReloaded {
 
 									$processedfiles++;
 								}
-								
+
 								if ($this->optMinifyjsfiles == FALSE) {
 									$writejstext = '{' . "\n" . $writejstext   . '}' . "\n";
 								} else {
 									$writejstext = '{' . $writejstext   . '}';
 								}
-								
+
 								$filecontent .= $writejstext;
 							}
-							
+
 							file_put_contents($checkfolderpath . DIRECTORY_SEPARATOR . $groupedscripts[$i]['md5css'], $filecontent);
 							$cntoutputjs++;
 							$lenoutputjs = $lenoutputjs + strlen($filecontent);
 						}
-						
+
 						$ifstate='';
 						if (isset($groupedscripts[$i]['ifstate'])) {
 							$ifstate=$groupedscripts[$i]['ifstate'];
 						}
-						
+
 						$endifstate='';
 						if (isset($groupedscripts[$i]['endifstate'])) {
 							$endifstate=$groupedscripts[$i]['endifstate'];
@@ -1769,7 +1789,7 @@ class IndexReloaded {
 								$async = 'async ';
 							}
 						}
-						
+
 						$groupedscripts[$i]['scriptoutput'] = $ifstate . '<script ' . $async . 'src="/' . $this->typo3tempsubfolder . '/js/' . $groupedscripts[$i]['md5css'] .
 						'" type="text/javascript"></script>' . $endifstate . "\n";
 					}
@@ -1781,14 +1801,14 @@ class IndexReloaded {
 				for ($i=0;$i<$groupedscriptscount;$i++) {
 					$scriptoutput .=$groupedscripts[$i]['scriptoutput'];
 				}
-				
+
 				$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebug);
 				$starttimedebug=microtime(TRUE);
 				if ($this->showDebugWindow == TRUE) {
 					$debuginfo .= '<span>Check output, '. $groupedscriptscount .' JS files: '. round($tdifftolastrun, 1) . ' ms</span><br />';
 				}
 			}
-			
+
 			//css files
 			if ($this->optProcesscssfiles == TRUE) {
 				if (DIRECTORY_SEPARATOR == '\\') {
@@ -1797,11 +1817,11 @@ class IndexReloaded {
 				} else {
 					$filefromroot = $this->typo3tempsubfolder . '/css';
 				}
-				
+
 				if (substr($filefromroot, 0, 1) != DIRECTORY_SEPARATOR) {
 					$filefromroot = DIRECTORY_SEPARATOR . $filefromroot;
 				}
-				
+
 				$checkfolderpath = realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '', str_replace($this->extensionrelpath . '/Classes/Controller',
 						'', dirname(__FILE__)))) . $filefromroot;
 				if (str_replace(':\\\\', '', $checkfolderpath) == $checkfolderpath) {
@@ -1815,33 +1835,35 @@ class IndexReloaded {
 					} else {
 						$filefromroot = $this->typo3tempsubfolder . '/css';
 					}
-					
+
 					if (substr($filefromroot, 0, 1) != DIRECTORY_SEPARATOR) {
 						$filefromroot = DIRECTORY_SEPARATOR . $filefromroot;
 					}
-					
+
 					mkdir(realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '', str_replace($this->extensionrelpath . '/Classes/Controller',
 					'', dirname(__FILE__)))) . $filefromroot);
 				}
 
 				$processedfiles=0;
-				$j2 = 0;	
-							
+				$j2 = 0;
+
 				if ($this->generateCSSbelowTheFold == TRUE) {
 					$starttimedebugmerge = microtime(TRUE);
 					$debugmergetime = 0;
-				}	
-				//return json_encode($groupedcss, JSON_PRETTY_PRINT);
+				}
+				if ($this->showDebugWindow == TRUE) {
+					//return json_encode($groupedcss, JSON_PRETTY_PRINT);
+				}
 				for ($i=0;$i<$groupedcsscount;$i++) {
 					if ($groupedcss[$i]['md5css'] != '') {
 						if ($this->freezeFolding == FALSE) {
-							if ((!file_exists($checkfolderpath . DIRECTORY_SEPARATOR . $groupedcss[$i]['md5css'])) || ($this->forceNewFiles == TRUE)) {							
+							if ((!file_exists($checkfolderpath . DIRECTORY_SEPARATOR . $groupedcss[$i]['md5css'])) || ($this->forceNewFiles == TRUE)) {
 								$groupedfilescount=count($groupedcss[$i]['file']);
 								$filecontent='';
 								for ($j=0;$j<$groupedfilescount;$j++) {
 									$writecsstext='';
-									$checkfile= $groupedcss[$i]['file'][$j][0];								
-									if ($groupedcss[$i]['file'][$j][0] == 'inline') {									
+									$checkfile= $groupedcss[$i]['file'][$j][0];
+									if ($groupedcss[$i]['file'][$j][0] == 'inline') {
 										$groupedcss[$i]['file'][$j][1] = str_replace("\n", '', $groupedcss[$i]['file'][$j][1]);
 										$writecsstext = str_replace('</style>', '', $groupedcss[$i]['file'][$j][1]);
 										$writecsstextarr = explode('>', $writecsstext);
@@ -1850,11 +1872,11 @@ class IndexReloaded {
 											$writecsstext = str_replace('inlinestarttag>', "\n", implode('>', $writecsstextarr)) . "\n";
 										}
 										//$writecsstexts = $writecsstext;
-										$writecsstext = $this->handleCssAtImportFiles($writecsstext, '', array(), 0);	
+										$writecsstext = $this->handleCssAtImportFiles($writecsstext, '', array(), 0);
 										//return ' in: ' . $writecsstexts . ' out: ' . $writecsstext . ' from: ' . json_encode($groupedcss[$i]['file'], JSON_PRETTY_PRINT);
-									} elseif (file_exists($checkfile)) {									
-										$writecsstext = file_get_contents($checkfile);						
-	
+									} elseif (file_exists($checkfile)) {
+										$writecsstext = file_get_contents($checkfile);
+
 										//leave:
 										//url("https://fbstatic-a.akamaihd.net/rsrc.php/v2/y1/r/LVx-xkvaJ0b.png");
 										//url("data:image/png;...
@@ -1875,12 +1897,12 @@ class IndexReloaded {
 												$writecsstextarr[$q]=substr($writecsstextarr[$q], 1);
 												$hypos='\'';
 											}
-											
+
 											if (substr($writecsstextarr[$q], 0, 1) == '"') {
 												$writecsstextarr[$q]=substr($writecsstextarr[$q], 1);
 												$hypos='"';
 											}
-	
+
 											$writecsstextarr2 = explode($hypos . ')', $writecsstextarr[$q]);
 											$urltocheck = $writecsstextarr2[0];
 											$urltocheckout = str_replace('https://', '', $urltocheck);
@@ -1896,34 +1918,34 @@ class IndexReloaded {
 														for ($p=0;$p<=$countcheckpatharr-$countcheckuppatharr;$p++) {
 															$outurltocheckpart1 .=$checkpatharr[$p].'/';
 														}
-														
+
 														$urltocheck = $outurltocheckpart1 . $outurltocheck;
 													} else {
 														$urltocheck =$checkpath .'/' . $urltocheck;
 													}
-	
+
 													$writecsstextarr2[0]=$urltocheck;
 												}
-	
+
 											}
-	
+
 											$writecsstextarr[$q] = $hypos .  implode($hypos . ')', $writecsstextarr2);
 										}
-	
-										$writecsstext = implode('url(', $writecsstextarr);									
+
+										$writecsstext = implode('url(', $writecsstextarr);
 										$processedfiles++;
 									}
-	
+
 									$endmediatype = '';
 									$startmediatype = '';
 									if ($groupedcss[$i]['file'][$j][2] != '') {
 										$endmediatype = "\n" . '}';
 										$startmediatype = $groupedcss[$i]['file'][$j][2];
 									}
-	
+
 									$filecontent .= $startmediatype . $writecsstext . $endmediatype . "\n";
 								}
-								
+
 								if ($this->tryFixBadCSS == TRUE) {
 									// the special filter for the crimes of Daniel Martin
 									// please don't laugh - it is true - hold on:
@@ -1938,27 +1960,27 @@ class IndexReloaded {
 											// let's suppose there's always an end tag ...
 											$danielmartinphpcrimesendtags = explode('?>', $danielmartinphpcrimes[$dm]);
 											array_shift($danielmartinphpcrimesendtags);
-											$danielmartinphpcrimes[$dm] = implode('', $danielmartinphpcrimesendtags);									
+											$danielmartinphpcrimes[$dm] = implode('', $danielmartinphpcrimesendtags);
 										}
-										
+
 										$filecontent = implode('', $danielmartinphpcrimes);
 									}
-									
-									if (str_replace('w\\', '', $filecontent) != $filecontent) {	
+
+									if (str_replace('w\\', '', $filecontent) != $filecontent) {
 										// now stupidities like "t\op:19px;"
 										$filecontent = $this->crunchcss($filecontent);
-										$danielmartinphpcrimes = explode('t\\', $filecontent);								
+										$danielmartinphpcrimes = explode('t\\', $filecontent);
 										$countdmc = count($danielmartinphpcrimes);
-										
+
 										for ($dm = 1; $dm < $countdmc; $dm++) {
 											// let's suppose there's always an end tag ...
 											$danielmartinphpcrimesendtags = explode(';', $danielmartinphpcrimes[$dm]);
 											array_shift($danielmartinphpcrimesendtags);
 											$danielmartinphpcrimes[$dm] = implode(';', $danielmartinphpcrimesendtags);
 										}
-										
+
 										$filecontent = implode('', $danielmartinphpcrimes);
-		
+
 										$danielmartinphpcrimes = explode('w\\', $filecontent);
 										$countdmc = count($danielmartinphpcrimes);
 										//return $countdmc;
@@ -1968,12 +1990,12 @@ class IndexReloaded {
 											array_shift($danielmartinphpcrimesendtags);
 											$danielmartinphpcrimes[$dm] = implode(';', $danielmartinphpcrimesendtags);
 										}
-										
+
 										$filecontent = implode('', $danielmartinphpcrimes);
-										
+
 									}
-								}							
-								
+								}
+
 								if ($this->generateCSSbelowTheFold == TRUE) {
 									$starttimedebugmerge = microtime(TRUE);
 									$filecontents = array();
@@ -1985,11 +2007,11 @@ class IndexReloaded {
 										If ((strlen($this->secret) != 20) && (strlen($this->secret) != 19)) {
 											$unsetgenerateCSSbelowTheFold = TRUE;
 										} else {
-											
+
 											//return json_encode($groupedcss, JSON_PRETTY_PRINT);
 											$filecontents = $this->splitCSSBelowAboveTheFold($filecontent);
 										}
-										
+
 										if (($filecontents == '') || ($unsetgenerateCSSbelowTheFold == TRUE)) {
 											//fall back on error with API-Server
 											$filecontent = $filecontentsave;
@@ -2003,7 +2025,7 @@ class IndexReloaded {
 											$cfgstrCSSold = $cfgstrCSS;
 											$cfgstrCSS = $cfgstrCSSnew;
 											$APIreset = TRUE;
-											
+
 										} else {
 											$filecontent = $filecontents[0];
 											$filecontentbelowthefold = $filecontents[1];
@@ -2014,15 +2036,15 @@ class IndexReloaded {
 										$filecontent = '';
 										$filecontentbelowthefold = '';
 									}
-									
+
 								} else {
 									if ($APIreset == TRUE) {
 										$groupedcss[$i]['md5css'] = str_replace($foldingmd5filename, '', $groupedcss[$i]['md5css']);
 										$groupedcss[$i]['md5css'] = str_replace('-' . $cfgstrCSSold, '-' . $cfgstrCSSnew, $groupedcss[$i]['md5css']);
 									}
-									
+
 								}
-								
+
 								if ($this->freezeFolding == FALSE) {
 									if ($this->doCrunchCSS == TRUE) {
 										if ($this->isCompressed($filecontent) == FALSE) {
@@ -2030,7 +2052,7 @@ class IndexReloaded {
 										} else {
 											$filecontent = $this->crunchcss($filecontent, TRUE);
 										}
-										
+
 										if ($this->generateCSSbelowTheFold == TRUE) {
 											if ($filecontentbelowthefold != '') {
 												if ($this->isCompressed($filecontentbelowthefold) == FALSE) {
@@ -2038,51 +2060,51 @@ class IndexReloaded {
 												} else {
 													$filecontentbelowthefold = $this->crunchcss($filecontentbelowthefold, TRUE);
 												}
-												
+
 											}
-											
+
 										}
-									
+
 									}
-									
+
 									file_put_contents($checkfolderpath . DIRECTORY_SEPARATOR . $groupedcss[$i]['md5css'], $filecontent);
 								}
-								
+
 								if ($this->generateCSSbelowTheFold == TRUE) {
 									if ($this->freezeFolding == FALSE) {
 										if ($this->pruneHTMLBaseToDisk == TRUE) {
 											file_put_contents($checkfolderpath . DIRECTORY_SEPARATOR . str_replace('.css', '.txt', $groupedcss[$i]['md5css']), $this->pruneHTMLBase);
 										}
-										
+
 										file_put_contents($checkfolderpath . DIRECTORY_SEPARATOR . str_replace('.css', 'below.css', $groupedcss[$i]['md5css']), $filecontentbelowthefold);
 									}
 									if ($this->mergeCSSbelowTheFold != TRUE) {
 										$this->lenoutputcssbelow = $this->lenoutputcssbelow + strlen($filecontentbelowthefold);
 										$this->lenoutputcssabove = $this->lenoutputcssabove + strlen($filecontent);
-									}	
-																
+									}
+
 									$cntoutputcssbelow++;
 									$lenoutputcss = $lenoutputcss + strlen($filecontentbelowthefold);
-									if ($this->mergeCSSbelowTheFold == TRUE) {	
+									if ($this->mergeCSSbelowTheFold == TRUE) {
 										if ($this->freezeFolding == FALSE) {
 											$retcode = $this->mergeCSS($checkfolderpath . DIRECTORY_SEPARATOR, $groupedcss[$i]['md5css'], $foldingmd5, $filecontent, $filecontentbelowthefold, $filecontentoPosabove, $filecontentoPosbelow);
-											if ($retcode == 'ko') {	
+											if ($retcode == 'ko') {
 												$this->mergeCSSbelowTheFold = FALSE;
 												$this->generateCSSbelowTheFold = FALSE;
 												$this->inlineCSSaboveTheFold = FALSE;
 											}
-											
+
 										}
-										
+
 									}
-									
+
 								}
-								
+
 								$cntoutputcss++;
-								$lenoutputcss = $lenoutputcss + strlen($filecontent);							
+								$lenoutputcss = $lenoutputcss + strlen($filecontent);
 							}
 						}
-						
+
 						if ($this->generateCSSbelowTheFold == TRUE) {
 							if ($this->freezeFolding == FALSE) {
 								$tdifftolastrunmerge = 1000*(microtime(TRUE) - $starttimedebugmerge);
@@ -2090,19 +2112,19 @@ class IndexReloaded {
 							} else {
 								$debugmergetime = 0;
 							}
-							
+
 						}
-						
+
 						$ifstate='';
 						if (isset($groupedcss[$i]['ifstate'])) {
 							$ifstate=$groupedcss[$i]['ifstate'];
 						}
-						
+
 						$endifstate='';
 						if (isset($groupedcss[$i]['endifstate'])) {
 							$endifstate=$groupedcss[$i]['endifstate'];
-						}					
-						
+						}
+
 						if ($this->generateCSSbelowTheFold == TRUE) {
 							if (($this->mergeCSSbelowTheFold == TRUE) && ($this->freezeFolding == FALSE)) {
 								$filenamelink = '/' . $this->typo3tempsubfolder . '/css/merged/' .	str_replace($foldingmd5filename, '', $groupedcss[$i]['md5css']);
@@ -2115,7 +2137,7 @@ class IndexReloaded {
 							}
 
 							$path = realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
-							str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filenamelink;							
+							str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filenamelink;
 							if ($this->inlineCSSaboveTheFold == TRUE) {
 								if (file_exists($path)) {
 									$modfilenamelink = file_get_contents($path);
@@ -2125,11 +2147,11 @@ class IndexReloaded {
 							} else {
 								$modfilenamelink = $this->createVersionNumberedFilename($filenamelink, TRUE);
 							}
-							
+
 						} else {
 							$modfilenamelink = '/' . $this->typo3tempsubfolder . '/css/' .	str_replace($foldingmd5filename, '', $groupedcss[$i]['md5css']);
 						}
-						
+
 						if ($modfilenamelink != '') {
 							if ($this->inlineCSSaboveTheFold == TRUE) {
 								$groupedcss[$i]['cssoutput'] = $ifstate . '<style>' . $modfilenamelink . '</style>' . $endifstate . "\n";
@@ -2139,7 +2161,7 @@ class IndexReloaded {
 						} else {
 							$groupedcss[$i]['cssoutput'] = '';
 						}
-						
+
 						if ($this->generateCSSbelowTheFold == TRUE) {
 							if ($this->mergeCSSbelowTheFold == TRUE) {
 								if ($this->freezeFolding == TRUE) {
@@ -2152,19 +2174,19 @@ class IndexReloaded {
 							} else {
 								if ($this->freezeFolding == TRUE) {
 									$filenamelink = '/' . $this->typo3tempsubfolder . '/css/' .	str_replace('.css', 'below.css', $groupedcss[$i]['md5css']);
-										
+
 								} else {
 									$filenamelink = '/' . $this->typo3tempsubfolder . '/css/' .	str_replace('.css', 'below.css', $groupedcss[$i]['md5css']);
 								}
 							}
-							
-							$modfilenamelink = $this->createVersionNumberedFilename($filenamelink, TRUE);							
+
+							$modfilenamelink = $this->createVersionNumberedFilename($filenamelink, TRUE);
 							$groupedcss[$i]['cssoutputbelow'] = $ifstate . '<link rel="stylesheet" type="text/css" href="' . $modfilenamelink . '" />' . $endifstate . "\n";
-							
+
 						} else {
 							$groupedcss[$i]['cssoutputbelow'] = '';
-						}						
-						
+						}
+
 					}
 
 				}
@@ -2176,20 +2198,20 @@ class IndexReloaded {
 					$cssoutput .= $groupedcss[$i]['cssoutput'];
 					$cssoutputbelow .= $groupedcss[$i]['cssoutputbelow'];
 				}
-				
+
 				$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebug);
 				$starttimedebug = microtime(TRUE);
 				if ($this->showDebugWindow == TRUE) {
 					$debuginfo .= '<span>Check output, ' . $groupedcsscount . ' CSS files: ' . round($tdifftolastrun, 1) . ' ms</span><br />';
 				}
-				
+
 			}
 
 		}
-		
-		$bufferout= str_replace('</body>', "\n". $scriptoutput . "\n". '</body>', $bufferout);		
+
+		$bufferout= str_replace('</body>', "\n". $scriptoutput . "\n". '</body>', $bufferout);
 		if (trim($cssoutputbelow) != '') {
-			$cssoutputbelowarr = explode("\n", $cssoutputbelow);			
+			$cssoutputbelowarr = explode("\n", $cssoutputbelow);
 			$jsoutputbelow = '<script async type="text/javascript">' . "\n" . '
 	function loadStyleSheet(src){
 		if (document.createStyleSheet) document.createStyleSheet(src);
@@ -2206,7 +2228,7 @@ class IndexReloaded {
 			foreach($cssoutputbelowarr as $cssoutputblw) {
 				if (trim($cssoutputblw) != '') {
 					$cssoutputblwsrc = str_replace('<link rel="stylesheet" type="text/css" href="', '', $cssoutputblw);
-					$cssoutputblwsrc = str_replace('" />', '', $cssoutputblwsrc);					
+					$cssoutputblwsrc = str_replace('" />', '', $cssoutputblwsrc);
 					if (($cssoutputblwsrc == '<!--[if IE]>') || ($cssoutputblwsrc == '<!--[if IE 7]>') || ($cssoutputblwsrc == '<!--[if IE 9]>') || ($cssoutputblwsrc == '<!--[if IE 8]>')) {
 						$jsoutputbelow .= "\t" . 'if (navigator.appName === \'Microsoft Internet Explorer\') {' . "\n";
 						$onIF = 1;
@@ -2220,30 +2242,30 @@ class IndexReloaded {
 								$jsoutputbelow .= "\t" . '}' . "\n";
 								$onIF = 0;
 							}
-							
-						} else {						
+
+						} else {
 							if ($onIF == 1) {
-								$jsoutputbelow .= "\t"; 
+								$jsoutputbelow .= "\t";
 							}
-							
+
 							$jsoutputbelow .= "\t" . 'loadStyleSheet(\'' . $cssoutputblwsrc .'\');' . "\n";
 						}
-						
+
 					}
-					
+
 				}
-				
+
 			}
-								
-			$jsoutputbelow .= '</script>';			
+
+			$jsoutputbelow .= '</script>';
 			$bufferout= str_replace('</body>', "\n". $jsoutputbelow . "\n". '</body>', $bufferout);
 			// if you want css-files above body:
 			// $bufferout= str_replace('</body>', "\n". $cssoutputbelow . "\n". '</body>', $bufferout);
-			
+
 		}
-		
+
 		$bufferout= str_replace('</head>', "\n". $cssoutput . "\n". '</head>', $bufferout);
-		
+
 		$lenbufferout=strlen($bufferout);
 		if ($this->showDebugWindow == TRUE) {
 			$tdifftolastrun = 1000*(microtime(TRUE) - $starttimedebugcallback);
@@ -2251,24 +2273,24 @@ class IndexReloaded {
 				$debuginfo .= '<span>CSS above/below the fold: '. round($debugmergetime, 1) . ' ms</span>';
 			}
 			$debuginfo .= '<br /><strong>Total time: '. round($tdifftolastrun, 1) . ' ms</strong></div>';
-			
+
 			$debuginfo .= '<div class="ttirl_subtitle"><strong>Input</strong><span class="ttirlsmall">, files found for processing</span></div><div>';
 			if ($cntininecss > 0) {
 				$debuginfo .= '<span>Inline CSS: ' . $cntininecss . '</span><br />';
 			}
-			
+
 			if ($cntininejs > 0) {
 				$debuginfo .= '<span>Inline JS: ' . $cntininejs . ' </span><br />';
 			}
-			
+
 			if ($cntcss > 0) {
 				$debuginfo .= '<span>CSS files: ' . $cntcss . ' </span><br />';
 			}
-			
+
 			if ($cntjs > 0) {
 				$debuginfo .= '<span>JS files: ' . $cntjs . ' </span><br />';
 			}
-			
+
 			if (intval(($lenInlinecss + $lencss)/1024) > 0) {
 				$debuginfo .= '<span>Length CSS: ' . intval(($lenInlinecss + $lencss)/1024) . 'kb </span><br />';
 			} else {
@@ -2276,7 +2298,7 @@ class IndexReloaded {
 					$debuginfo .= '<span>Length CSS: ' . intval(($lenInlinecss + $lencss)) . 'bytes </span><br />';
 				}
 			}
-			
+
 			if (intval(($lenInlinejs + $lenjs)/1024) > 0) {
 				$debuginfo .= '<span>Length JS: ' . intval(($lenInlinejs + $lenjs)/1024) . 'kb </span><br />';
 			} else {
@@ -2284,9 +2306,9 @@ class IndexReloaded {
 					$debuginfo .= '<span>Length JS: ' . intval(($lenInlinejs + $lenjs)) . 'bytes </span><br />';
 				}
 			}
-			
+
 			$debuginfo .= '</div>';
-			
+
 			if (intval($cntkeepcss + $cntkeepjs)  > 0) {
 				$debuginfo .= '<div class="ttirl_subtitle"><strong>Unchanged</strong><span class="ttirlsmall">, files excluded from processing</span></div><div>';
 				if (intval($cntkeepcss)  > 0) {
@@ -2295,7 +2317,7 @@ class IndexReloaded {
 						$debuginfo .= '<span class="ttirlsmall"> (external CSS files: ' . $cntkeepcssext . ')</span>';
 					}
 					$debuginfo .= '</span><br />';
-					
+
 				}
 				if (intval($cntkeepjs)  > 0) {
 					$debuginfo .= '<span>JS files kept: ' . $cntkeepjs . ' </span>';
@@ -2303,31 +2325,31 @@ class IndexReloaded {
 						$debuginfo .= '<span class="ttirlsmall"> (external JS files: ' . $cntkeepjsext . ')</span>';
 					}
 					$debuginfo .= '</span><br />';
-					
+
 				}
 				$debuginfo .= '</div>';
 			}
-			
+
 			if (intval($cntoutputcss + $cntoutputjs)  > 0) {
 				$debuginfo .= '<div class="ttirl_subtitle"><strong>Output</strong></div><div>';
-			
-			
+
+
 				if (intval($cntoutputcss)  > 0) {
 					$debuginfo .= '<span>CSS files: ' . $cntoutputcss . ' </span><br />';
 					if (($cntoutputcss > 0) && ($cntcss > 0)){
 						$debuginfo .= '<span class="ttirlsmall">Change CSS requests: <b>' . round(100*(($cntoutputcss)/($cntcss)-1), 1) . '%</b></span><br />';
 					}
-					
+
 				}
-				
+
 				if (intval($cntoutputjs)  > 0) {
 					$debuginfo .= '<span>JS files: ' . $cntoutputjs . ' </span><br />';
 					if (($cntoutputjs > 0) && ($cntjs > 0)){
 						$debuginfo .= '<span class="ttirlsmall">Change JS requests: <b>' . round(100*(($cntoutputjs)/($cntjs)-1), 1) . '%</b></span><br />';
 					}
-					
+
 				}
-				
+
 				$debuginfo .= '</div>';
 			}
 			if ((intval($lenoutputcss/1024)+intval($lenoutputjs/1024))  > 0) {
@@ -2338,32 +2360,32 @@ class IndexReloaded {
 						$debuginfo .= '<span class="ttirlsmall">Change in size: <b>' . round(100*((intval($lenoutputcss/1024))/
 								((intval(($lenInlinecss + $lencss)/1024)))-1), 1) . '%</b></span><br />';
 					}
-					
+
 					if (intval($this->lenoutputcssabove/1024)  > 0) {
 						$debuginfo .= '<span>Length CSS above the fold: ' . intval($this->lenoutputcssabove/1024) . 'kb </span><br />';
-					} elseif (intval($this->lenoutputcssabove)  > 0) {				
-						$debuginfo .= '<span>Length CSS above the fold: ' . intval($this->lenoutputcssabove) . 'bytes </span><br />';					
+					} elseif (intval($this->lenoutputcssabove)  > 0) {
+						$debuginfo .= '<span>Length CSS above the fold: ' . intval($this->lenoutputcssabove) . 'bytes </span><br />';
 					}
-					
+
 					if (intval($this->lenoutputcssbelow/1024)  > 0) {
 						$debuginfo .= '<span>Length CSS below the fold: ' . intval($this->lenoutputcssbelow/1024) . 'kb </span><br />';
-					} elseif (intval($this->lenoutputcssbelow)  > 0) {					
-						$debuginfo .= '<span>Length CSS below the fold: ' . intval($this->lenoutputcssbelow) . 'bytes </span><br />';					
-					}				
-					
+					} elseif (intval($this->lenoutputcssbelow)  > 0) {
+						$debuginfo .= '<span>Length CSS below the fold: ' . intval($this->lenoutputcssbelow) . 'bytes </span><br />';
+					}
+
 				}
-				
+
 				if (intval($lenoutputjs/1024)  > 0) {
 					$debuginfo .= '<span>Length JS: ' . intval($lenoutputjs/1024) . 'kb </span><br />';
 					if ((intval($lenoutputjs/1024)  > 0) && (intval(($lenInlinejs + $lenjs)/1024) > 0)){
 						$debuginfo .= '<span class="ttirlsmall">Change in size: <b>' . round(100*((intval($lenoutputjs/1024))/
 								((intval(($lenInlinejs + $lenjs)/1024)))-1), 1) . '%</b></span><br />';
 					}
-					
+
 				}
 				$debuginfo .= '</div>';
 			}
-			
+
 			if ((intval($lenbuffer/1024)  > 0) && (intval($lenbufferout/1024)  > 0)) {
 				$debuginfo .= '<div class="ttirl_subtitle"><strong>Output - overall</strong></div><div>';
 				$debuginfo .= '<span>Length HTML went from ' . intval($lenbuffer/1024) . 'kb to ' .
@@ -2373,13 +2395,13 @@ class IndexReloaded {
 				$debuginfo .= '</div>';
 
 			}
-			
+
 			if ($this->freezeFolding == TRUE) {
 				$debuginfo .= '<div class="ttirl_subtitle ttirl_subtitleinfo"><strong>Folding - information</strong></div><div>';
 				$debuginfo .= '<span>freezeFolding is enabled (!)</span><br />';
 				$debuginfo .= '</div>';
 			}
-			
+
 			if (($this->makefoldingCSSreport == TRUE) && (count($this->foldingCSSreport) > 0)) {
 				$cntcssfilesforreport = count($this->foldingCSSreport);
 				$startctrl = 0;
@@ -2394,7 +2416,7 @@ class IndexReloaded {
 				$totalmergeCSSNewBelowStart = 0;
 				$totalmergeCSSBelowEnd = 0;
 				$totalmergeCSSAboveEnd = 0;
-				for ($r = 0; $r < $cntcssfilesforreport; $r++) {					
+				for ($r = 0; $r < $cntcssfilesforreport; $r++) {
 					$newselabove = $newselabove + $this->foldingCSSreport[$r]['mergeCSSAboveEnd']['selectors'] - $this->foldingCSSreport[$r]['mergeCSSOldAboveStart']['selectors'];
 					$newselbelow = $newselbelow + $this->foldingCSSreport[$r]['mergeCSSBelowEnd']['selectors'] - $this->foldingCSSreport[$r]['mergeCSSOldBelowStart']['selectors'];
 					$totalselectorsold = $totalselectorsold + $this->foldingCSSreport[$r]['mergeCSSOldBelowStart']['selectors'] + $this->foldingCSSreport[$r]['mergeCSSOldAboveStart']['selectors'];
@@ -2408,13 +2430,13 @@ class IndexReloaded {
 					$totalmergeCSSAboveEnd = $totalmergeCSSAboveEnd + $this->foldingCSSreport[$r]['mergeCSSAboveEnd']['selectors'];
 				}
 				$debuginfo .= '<div class="ttirl_subtitle"><strong>CSS folding</strong></div><div>';
-				
+
 				if ($this->countUnionMetaInitialElements > 0) {
 					$debuginfo .= '<span>Selectors new: ' . $totalselectorsnew . ' (' .
 							$totalmergeCSSNewAboveStart. '/' .$totalmergeCSSNewBelowStart. ')</span><br />' .
 							'<span>Selectors old: ' . $totalselectorsold . ' (' .
 							$totalmergeCSSOldAboveStart. '/' .$totalmergeCSSOldBelowStart. ')</span><br />' .
-						
+
 						'<span>Selectors result: ' . $totalselectorsend . ' (' .
 							$totalmergeCSSAboveEnd. '/' .$totalmergeCSSBelowEnd. ')</span><br />' .
 						'<span>Moved selectors: '. $this->countUnionMetaMovedSelectors . '</span><br />' .
@@ -2423,18 +2445,18 @@ class IndexReloaded {
 						$debuginfo .= '<span>Elements before drop: '. $this->countUnionMetabeforeDrop . '</span><br />' .
 						'<span>Elements after drop: '. $this->countUnionMetaafterDrop . '</span><br />';
 					}
-					
+
 					/* $debuginfo .='<span>Details for the Union:<small><pre>' .
-					json_encode($this->foldingCSSreport, JSON_PRETTY_PRINT) . 
+					json_encode($this->foldingCSSreport, JSON_PRETTY_PRINT) .
 							'</pre></small></span><br />'; */
 				}
 				$debuginfo .= '</div>';
-				
+
 			}
-			
+
 			$debuginfo .= $debugopt;
 			$debuginfo .= '</div>';
-			
+
 			$debuginfo .= '<style>
 	#tt_ri_dbg {
 		position:absolute;
@@ -2462,30 +2484,30 @@ class IndexReloaded {
 		padding: 0 5px;
 	}
 	.ttirl_title {
-		
-		background-color: #e5bf90;		
+
+		background-color: #e5bf90;
 		border: 1px solid #60381c;
 		padding: 0 5px;
-	}					
+	}
 	.ttirl_subtitle {
-		background-color: #edddbf;		
+		background-color: #edddbf;
 		border: 1px solid #60381c;
 		padding: 0 5px;
 	}
 	.ttirl_subtitleinfo {
-		background-color: #c1dbed;		
+		background-color: #c1dbed;
 		border: 1px solid #073e61;
 		padding: 0 5px;
 	}
 	 .ttirlsmall {
 		font-size: 80%;
-	}			
-					
+	}
+
 </style>';
 			$bufferout= str_replace($this->showDebugWindowBodyTag, $this->showDebugWindowBodyTag  . $debuginfo . '</div>', $bufferout);
 
 		}
-		
+
 		$hassomework=TRUE;
 		do {
 			$bufferout= str_replace("\r\n\r\n", "\r\n", $bufferout);
@@ -2499,22 +2521,23 @@ class IndexReloaded {
 					(str_replace("\t\n", '', $bufferout) == $bufferout) && (str_replace("\r\n\r\n", '', $bufferout) == $bufferout)) {
 				$hassomework=FALSE;
 			}
-			
+
 		} while ($hassomework==TRUE);
-	 	
+
 	 	If ($this->dontmod == 1) {
 	 		return($bufferin);
 	 	} else {
 			return($bufferout);
 		}
-		
+
 	}
-	
+
 	/**
 	 * checks number of selectors, rules and @medias in a file for reporting
 	 *
 	 * @param	string		$entryname:
 	 * @param	string		$filecontents:
+	 * @param	[type]		$mediacorrectrules: ...
 	 * @return	void		writes $this->foldingCSSreport
 	 */
 	private function foldingCSSreportentry($entryname, $filecontents, $mediacorrectrules = FALSE) {
@@ -2535,16 +2558,16 @@ class IndexReloaded {
 		} else {
 			$filecontents = $this->crunchcss($filecontents);
 			$filecontents = str_replace('}}', '}', $filecontents);
-			$CSStotalrulesarr = explode('}', $filecontents);		
+			$CSStotalrulesarr = explode('}', $filecontents);
 		}
-		
-		$totalrules = count($CSStotalrulesarr);		
+
+		$totalrules = count($CSStotalrulesarr);
 		$CSStotalatmediaarr = explode('@media', $filecontents);
-		$totalatmedia = count($CSStotalatmediaarr) - 1;		
+		$totalatmedia = count($CSStotalatmediaarr) - 1;
 		if ($mediacorrectrules == TRUE) {
 			$totalrules = $totalrules - $totalatmedia;
 		}
-		
+
 		$CSStotalselectors = 0;
 		$onkeyframe = 0;
 		foreach ($CSStotalrulesarr as $CSStotalrulesel) {
@@ -2559,28 +2582,30 @@ class IndexReloaded {
 				if (count($CSStotalrulesarr2) > 1 ) {
 					$CSStotalrulesarrsels = explode(',', $CSStotalrulesarr2[count($CSStotalrulesarr2)-2]);
 					$CSStotalselectors = $CSStotalselectors + count($CSStotalrulesarrsels);
-				} 
-				
+				}
+
 			}
-			
+
 		}
-		
+
 		$totalselectors = $CSStotalselectors;
 		$this->foldingCSSreport[$this->iFCSSRep][$entryname]['selectors'] = $totalselectors;
 		$this->foldingCSSreport[$this->iFCSSRep][$entryname]['rules'] = $totalrules -1;
 		$this->foldingCSSreport[$this->iFCSSRep][$entryname]['atmedia'] = $totalatmedia;
 	}
-		
+
 	/**
 	 * Merges individual above/below CSS-Files into common CSS-files in subfolder /merged
 	 *
-	 * @param	string		$soucedirectory: 
-	 * @param	string		$filename: 
-	 * @param	string		$foldingmd5: 
-	 * @param	string		$filecontent: 
-	 * @param	string		$filecontentbelowthefold: 
+	 * @param	string		$soucedirectory:
+	 * @param	string		$filename:
+	 * @param	string		$foldingmd5:
+	 * @param	string		$filecontent:
+	 * @param	string		$filecontentbelowthefold:
+	 * @param	[type]		$filecontentoPosabove: ...
+	 * @param	[type]		$filecontentoPosbelow: ...
 	 * @return	void		writes the CSS-Files
-	 */	
+	 */
 	private function mergeCSS($soucedirectory, $filename, $foldingmd5, $filecontent, $filecontentbelowthefold, $filecontentoPosabove, $filecontentoPosbelow) {
 	// scans for CSS-Files with same name-root and merges them into subfolder /merged
 		$foldingmd5 = '-' . $foldingmd5;
@@ -2589,7 +2614,7 @@ class IndexReloaded {
 		$cssabovefiles = array();
 		$cssbelowfiles = array();
 		$ia = 0;
-		$ib = 0;		
+		$ib = 0;
 		/// read path to sessiondirectory in .tempfile
 		if (!is_dir($soucedirectory)) {
 			//createdir
@@ -2599,15 +2624,15 @@ class IndexReloaded {
 			} else {
 				$filefromroot = $this->typo3tempsubfolder .  '/css/merged';
 			}
-			
+
 			if (substr($filefromroot, 0, 1) != DIRECTORY_SEPARATOR) {
 				$filefromroot = DIRECTORY_SEPARATOR . $filefromroot;
 			}
-			
+
 			mkdir(realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
 			str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filefromroot);
 		}
-		
+
 		if (is_dir($soucedirectory)) {
 			$d = dir($soucedirectory);
 			if ($d != FALSE){
@@ -2623,18 +2648,18 @@ class IndexReloaded {
 								$cssabovefiles[$ia] = $entry;
 								$ia++;
 							}
-							
+
 						}
-						
+
 					}
-		
+
 				}
-		
+
 				$d->close();
 			}
-			
+
 		}
-		
+
 		if (($ib+$ia) == 0) {
 			//first file, no merge needed
 			$this->lenoutputcssbelow = $this->lenoutputcssbelow + strlen($filecontentbelowthefold);
@@ -2645,19 +2670,19 @@ class IndexReloaded {
 			file_put_contents($soucedirectory . str_replace('.css', 'belowctrl.txt', str_replace($foldingmd5 , '', $filename)), $filecontentoPosbelow);
 			return '';
 		} else {
-			
-			
+
+
 			$oldfilecontentsabove = '';
 			if (file_exists($soucedirectory . str_replace('.css', 'abovectrl.txt', $cssabovefiles[0]))) {
 				$oldfilecontentsabove = file_get_contents($soucedirectory . str_replace('.css', 'abovectrl.txt', $cssabovefiles[0]));
 			}
-			
+
 			$oldfilecontentsbelow = '';
 			if (file_exists($soucedirectory . str_replace('.css', 'belowctrl.txt', $cssabovefiles[0]))) {
 				$oldfilecontentsbelow = file_get_contents($soucedirectory . str_replace('.css', 'belowctrl.txt', $cssabovefiles[0]));
 				// $cssabovefiles[0] is no joke ! it's just in order to get the right filename
 			}
-			
+
 			$dtf = array();
 			$dtf['func'] = 2;
 			$dtf['filecontentoPosabove'] = gzencode($filecontentoPosabove, 5);
@@ -2671,14 +2696,14 @@ class IndexReloaded {
 			$dtf['countUnionMetaMovedSelectors'] = $this->countUnionMetaMovedSelectors;
 			$dtf['countUnionMetaNewElements'] = $this->countUnionMetaNewElements;
 			$dtf['countUnionMetabeforeDrop'] = $this->countUnionMetabeforeDrop;
-			$dtf['countUnionMetaafterDrop'] = $this->countUnionMetaafterDrop;			
+			$dtf['countUnionMetaafterDrop'] = $this->countUnionMetaafterDrop;
 			$dtf['pruneHTMLBaseToDisk'] = $this->pruneHTMLBaseToDisk;
 			$dtf['pruneHTMLBase'] = $this->pruneHTMLBase;
 			$dtf['checkDupesOnFoldingMerge'] = $this->checkDupesOnFoldingMerge;
-			
+
 			$dtanswer = $this->apiCall($this->secret, $dtf);
 			If ($dtanswer != '') {
-				
+
 				$dta = array();
 				$dta = unserialize(base64_decode(rawurldecode($dtanswer)));
 				if (is_array($dta) == FALSE) {
@@ -2688,22 +2713,21 @@ class IndexReloaded {
 					} else {
 						echo '<div style="position:absolute; z-index:999;">Answer in merge step from API-Server '. $this->donationserver .': ' . $dtanswer . '</div><br />';
 					}
-					
+
 					return 'ko';
-				} else {				
+				} else {
 					$cssbelow = gzdecode($dta['cssbelow']);
 					$cssabove = gzdecode($dta['cssabove']);
 					$cssaboveiPos = gzdecode($dta['cssaboveiPos']);
 					$cssbelowiPos = gzdecode($dta['cssbelowiPos']);
 					$this->foldingCSSreport = unserialize(base64_decode(rawurldecode($dta['foldingCSSreport'])));
-					//$this->iFCSSRep = $dta['iFCSSRep'];
 					$this->countUnionMetaInitialElements = $dta['countUnionMetaInitialElements'];
 					$this->countUnionMetaMovedSelectors = $dta['countUnionMetaMovedSelectors'];
 					$this->countUnionMetaNewElements = $dta['countUnionMetaNewElements'];
 					$this->countUnionMetabeforeDrop = $dta['countUnionMetabeforeDrop'];
 					$this->countUnionMetaafterDrop = $dta['countUnionMetaafterDrop'];
 					$this->pruneHTMLBase = $dta['pruneHTMLBase'];
-					
+
 					$this->lenoutputcssbelow = $this->lenoutputcssbelow + strlen($cssbelow);
 					$this->lenoutputcssabove = $this->lenoutputcssabove + strlen($cssabove);
 					file_put_contents($soucedirectory . str_replace('.css', 'below.css', str_replace($foldingmd5 , '', $filename)), $cssbelow);
@@ -2712,16 +2736,16 @@ class IndexReloaded {
 					file_put_contents($soucedirectory . str_replace('.css', 'belowctrl.txt', str_replace($foldingmd5 , '', $filename)), $cssbelowiPos);
 					return '';
 				}
-				
+
 			} else {
 				echo '<div>Empty answer in merge step from API-Server '. $this->donationserver .'</div><br />';
 				return 'ko';
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	/**
 	 * creates and returns a md5-string based on tags, classes, ids and input types
 	 * creates $this->bufferinclasses, $this->bufferintags ...
@@ -2729,8 +2753,7 @@ class IndexReloaded {
 	 * @param	string		$bufferin
 	 * @return	string		md5-string
 	 */
-	
-	public function htmlFoldMeta($bufferin) {
+	protected function htmlFoldMeta($bufferin) {
 		$bufferintags = array();
 		$bufferinarrbasezero = explode('<body', $bufferin);
 		if (count($bufferinarrbasezero)>0) {
@@ -2743,44 +2766,44 @@ class IndexReloaded {
 				echo "HTML-error toctoc_indexreloaded: No <body>-Tag found";
 				exit;
 			}
-			
+
 		}
-		
+
 		$bufferinarrbase = explode('<', $bufferinz);
 		foreach ($bufferinarrbase as $taginput) {
 			$taginputdetailarr = explode('>', $taginput);
-			$taginputdetail = str_replace('/', '', $taginputdetailarr[0]);				
+			$taginputdetail = str_replace('/', '', $taginputdetailarr[0]);
 			if (str_replace('!', '', $taginputdetail) == $taginputdetail) {
 				if (str_replace(':', '', $taginputdetail) == $taginputdetail) {
-					$tagarr = explode(' ', $taginput);						
+					$tagarr = explode(' ', $taginput);
 					if (strlen(trim($tagarr[0])) < strlen($taginputdetail)) {
-						If ((str_replace('=', '', trim($tagarr[0])) == trim($tagarr[0])) && (str_replace('>', '', trim($tagarr[0])) == trim($tagarr[0]))) {	
+						If ((str_replace('=', '', trim($tagarr[0])) == trim($tagarr[0])) && (str_replace('>', '', trim($tagarr[0])) == trim($tagarr[0]))) {
 							if (trim($tagarr[0]) != '') {
 								$bufferintags[strtolower(trim($tagarr[0]))] = 1;
 							}
-							
+
 						}
-						
+
 					} else {
 						If ((str_replace('=', '', trim($taginputdetail)) == trim($taginputdetail)) && (str_replace('>', '', trim($taginputdetail)) == trim($taginputdetail))) {
 							if (trim($taginputdetail) != '') {
 								$bufferintags[strtolower($taginputdetail)] = 1;
 							}
-							
+
 						}
-						
+
 					}
-						
+
 				}
-		
+
 			}
-				
+
 		}
 
 		foreach ($this->tagsToKeepAboveTheFold as $tagToKeepAboveTheFold) {
 			$bufferintags[$tagToKeepAboveTheFold] = 1;
 		}
-		
+
 		ksort($bufferintags);
 		$this->bufferintags = $bufferintags;
 		// make array with all classes found below <body>
@@ -2796,21 +2819,21 @@ class IndexReloaded {
 						if (trim($classinput) != '') {
 							$bufferinclasses[trim($classinput)] = 1;
 						}
-						
+
 					}
-					
+
 				}
-				
+
 			}
-		
+
 		}
-		
+
 		foreach ($this->classesToKeepAboveTheFold as $tagToKeepAboveTheFold) {
 			$bufferinclasses[$tagToKeepAboveTheFold] = 1;
 		}
-		
+
 		ksort($bufferinclasses);
-		$this->bufferinclasses = $bufferinclasses;		
+		$this->bufferinclasses = $bufferinclasses;
 		$bufferinputtypes = array();
 		$bufferinarrbase = explode('type="', $bufferinz);
 		foreach ($bufferinarrbase as $taginput) {
@@ -2823,15 +2846,15 @@ class IndexReloaded {
 							$bufferinputtypes[trim($classesstr)] = 1;
 						}
 					}
-					
+
 				}
 			}
 
-		}		
+		}
 
 		ksort($bufferinputtypes);
 		$this->bufferinputtypes = $bufferinputtypes;
-		
+
 		// make array with all ids found below <body>
 		$bufferinids = array();
 		$bufferinidsnocms = array();
@@ -2845,58 +2868,57 @@ class IndexReloaded {
 					if ((intval(substr($classesstr,1)) == 0) && (substr($classesstr,0,1) != 'c')){
 						if (intval(substr(trim($classesstr),(strlen(trim($classesstr))-2))) == 0) {
 							if (trim($classesstr) != '') {
-								$bufferinidsnocms[trim($classesstr)] = 1;							
+								$bufferinidsnocms[trim($classesstr)] = 1;
 							}
 						}
-						
+
 					}
-					
+
 					if ((intval(substr($classesstr,1)) > 0) && (substr($classesstr,0,1) != 'c')){
 						if (intval(substr(trim($classesstr),(strlen(trim($classesstr))-2))) == 0) {
 							if (trim($classesstr) != '') {
 								$bufferinidsnocms[trim($classesstr)] = 1;
 							}
-							
+
 						}
-					
+
 					}
-					
+
 				}
-					
+
 			}
-			
+
 		}
-		
+
 		foreach ($this->IDsToKeepAboveTheFold as $tagToKeepAboveTheFold) {
 			$bufferinids[$tagToKeepAboveTheFold] = 1;
 			$bufferinidsnocms[$tagToKeepAboveTheFold] = 1;
 		}
-		
+
 		ksort($bufferinids);
 		ksort($bufferinidsnocms);
 		$this->bufferinids = $bufferinids;
-		
+
 		// no ids from content elements
-		$ret = implode('', array_keys($bufferintags)) . implode('', array_keys($bufferinclasses)) . 
-				implode('', array_keys($bufferinputtypes)) . implode('', array_keys($bufferinidsnocms));		
+		$ret = implode('', array_keys($bufferintags)) . implode('', array_keys($bufferinclasses)) .
+				implode('', array_keys($bufferinputtypes)) . implode('', array_keys($bufferinidsnocms));
 		if ($this->pruneHTMLBaseToDisk == TRUE) {
-			$this->pruneHTMLBase = 'found tags: ' . implode(',', array_keys($bufferintags)) . "\n" . 'classes: ' . implode(',', array_keys($bufferinclasses)) . "\n" . 
-				'input types: ' . implode(',', array_keys($bufferinputtypes)) . "\n" . 'ids without numbers: ' . implode(',', array_keys($bufferinidsnocms));	
+			$this->pruneHTMLBase = 'found tags: ' . implode(',', array_keys($bufferintags)) . "\n" . 'classes: ' . implode(',', array_keys($bufferinclasses)) . "\n" .
+				'input types: ' . implode(',', array_keys($bufferinputtypes)) . "\n" . 'ids without numbers: ' . implode(',', array_keys($bufferinidsnocms));
 		}
-		
-		$ret = md5($ret);		
-		return $ret;				
+
+		$ret = md5($ret);
+		return $ret;
 	}
 
 	/**
 	 * splits $filecontent into an array, one holding CSS for above the fold, the other below the fold
 	 *
 	 * @param	string		$filecontent: all CSS
-	 * @param	string		$bufferin: orhiginal HTML
 	 * @return	array		$filecontents, [0] = $filecontentabovethefold;[1] = $filecontentbelowthefold;
 	 */
 	protected function splitCSSBelowAboveTheFold($filecontent) {
-		
+
 		$dtf = array();
 		$dtf['func'] = 1;
 		$dtf['filecontent'] = gzencode($filecontent, 5);
@@ -2912,7 +2934,7 @@ class IndexReloaded {
 		if ($this->makefoldingCSSreport == TRUE) {
 			$this->foldingCSSreportentry('splitCSSAllStart', $filecontent);
 		}
-		
+
 		$dtf['makefoldingCSSreport'] = $this->makefoldingCSSreport;
 		$dtf['bufferinclasses'] = rawurlencode(base64_encode(serialize($this->bufferinclasses)));
 		$dtf['bufferinids'] = rawurlencode(base64_encode(serialize($this->bufferinids)));
@@ -2922,18 +2944,18 @@ class IndexReloaded {
 		foreach ($this->tagsToKeepAboveTheFold as $keepAbove) {
 			$keepAboves .= $keepAbove . ',';
 		}
-		
+
 		foreach ($this->classesToKeepAboveTheFold as $keepAbove) {
 			$keepAboves .= '.' . $keepAbove . ',';
 		}
-		
+
 		foreach ($this->IDsToKeepAboveTheFold as $keepAbove) {
 			$keepAboves .= '#' . $keepAbove . ',';
 		}
-		
+
 		if ($keepAboves == ',') {
 			$keepAboves = '';
-		} 
+		}
 
 		$dtf['keepAboves'] = rawurlencode(base64_encode($keepAboves));
 		$dtanswer = $this->apiCall($this->secret, $dtf);
@@ -2948,15 +2970,15 @@ class IndexReloaded {
 				} else {
 					echo '<div style="position:absolute; z-index:999;">Answer in folding step from API-Server '. $this->donationserver .': ' . $dtanswer . '</div><br />';
 				}
-				
+
 				return '';
-			} else {						
+			} else {
 				$cssabove = gzdecode($dta['cssabove']);
 				$cssbelow = gzdecode($dta['cssbelow']);
-				
+
 				$oPosabove = gzdecode($dta['oPosabove']);
 				$oPosbelow = gzdecode($dta['oPosbelow']);
-				
+
 				$filecontents[0] = $cssabove;
 				$filecontents[1] = $cssbelow;
 				$filecontents[2] = $this->crunchCSS($oPosabove);
@@ -2966,17 +2988,18 @@ class IndexReloaded {
 		} else {
 			echo '<div>Empty answer in folding step from API-Server '. $this->donationserver .'</div><br />';
 			return '';
-		}		
+		}
 
 	}
-	
+
 	/**
 	 * Crunches CSS
 	 *
 	 * @param	string		$buffer: ...
+	 * @param	boolean		$minimal: ...
 	 * @return	string		...
 	 */
-	protected function crunchcss($buffer, $minimal = FALSE) {	
+	protected function crunchcss($buffer, $minimal = FALSE) {
 		/* remove comments */
 		$buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
 		if ($minimal == FALSE) {
@@ -2996,10 +3019,10 @@ class IndexReloaded {
 		} else  {
 			$buffer = str_replace("\r\n", "\n", $buffer);
 		}
-		
+
 		return $buffer;
 	}
-	
+
 	/**
 	 * Is Input already compressed?
 	 *
@@ -3009,13 +3032,13 @@ class IndexReloaded {
 	protected function isCompressed($buffer) {
 		/* remove comments */
 		$buffer = preg_replace('!/\*[^*]*\*+([^/][^*]*\*+)*/!', '', $buffer);
-		$buffer = str_replace(array("\t", "\r", "\n"), '', $buffer);		
+		$buffer = str_replace(array("\t", "\r", "\n"), '', $buffer);
 		$buffercomp = str_replace(' ','', $buffer);
 		$ret = FALSE;
 		if ((strlen($buffercomp)/strlen($buffer)) > 0.999) {
 			$ret = TRUE;
-		} 
-		
+		}
+
 		return $ret;
 	}
 
@@ -3024,6 +3047,7 @@ class IndexReloaded {
 	 *
 	 * @param	string		$buffer: ...
 	 * @param	boolean		$doMinify: ...
+	 * @param	boolean		$minimal: ...
 	 * @return	string		...
 	 */
 	protected function compressjs($buffer, $doMinify, $minimal = FALSE) {
@@ -3038,25 +3062,25 @@ class IndexReloaded {
 				$buffer = $this->libJSmin->minify($buffer);
 			} else {
 				$buffer = str_replace("\r\n", "\n", $buffer);
-			}		
-			
+			}
+
 			$buffer = str_replace ('ttithisiscdata=1;', "\n" . '/*<![CDATA[*/' . "\n", $buffer);
 			$buffer = str_replace ('ttithiswascdata=0;', "\n" . '/*]]>*/' . "\n", $buffer);
 		} else {
 			$buffer = str_replace ('ttithisiscdata=1;', '/*<![CDATA[*/', $buffer);
 			$buffer = str_replace ('ttithiswascdata=0;', '/*]]>*/', $buffer);
-		}		
-		
+		}
+
 		return $buffer;
 	}
-	
+
 	/**
 	 * Checks for @import instructions, reads the file and inserts text in inut/output
 	 *
 	 * @param	string		$writecsstext: ...
-	 * @param	[type]		$checkpath: ...
-	 * @param	[type]		$checkpatharr: ...
-	 * @param	[type]		$countcheckpatharr: ...
+	 * @param	string		$checkpath: ...
+	 * @param	array		$checkpatharr: ...
+	 * @param	int		$countcheckpatharr: ...
 	 * @return	string		$writecsstext..
 	 */
 	protected function handleCssAtImportFiles($writecsstext, $checkpath, $checkpatharr, $countcheckpatharr) {
@@ -3066,7 +3090,7 @@ class IndexReloaded {
 			$hypos = '';
 			$writecsstextarr = array();
 			$writecsstextarr = explode('@import', $writecsstext);
-			$writecsstextarrcount=count($writecsstextarr);			
+			$writecsstextarrcount=count($writecsstextarr);
 			$initialcss = $writecsstextarr[0];
 			for ($q=1;$q<$writecsstextarrcount;$q++) {
 				$hypos='';
@@ -3081,17 +3105,17 @@ class IndexReloaded {
 						$remainingcss = $writecsstextqarr[1];
 					}
 				}
-				
+
 				if (substr(ltrim($writecsstextqarr[0]), 0, 1) == '\'') {
 					$hypos = '\'';
 					$writecsstextqarr[0] = substr(ltrim($writecsstextqarr[0]), 1);
 				}
-				
+
 				if (substr(ltrim($writecsstextqarr[0]), 0, 1) == '"') {
 					$hypos = '"';
 					$writecsstextqarr[0] = substr(ltrim($writecsstextqarr[0]), 1);
 				}
-				
+
 				$writecsstextqarr[0] = ltrim($writecsstextqarr[0]);
 				if ($hypos=='') {
 					$strposspace = strpos($writecsstextqarr[0], ' ');
@@ -3103,25 +3127,25 @@ class IndexReloaded {
 						$writecsstextarr2[0] = $writecsstextqarr[0];
 						$writecsstextarr2[1] = '';
 					}
-					
+
 				} else {
 					$writecsstextarr2 = explode($hypos, $writecsstextqarr[0]);
 				}
-				
+
 				$urltocheck = $writecsstextarr2[0];
-				
+
 				$urltocheckout = str_replace('https://', '', $urltocheck);
 				$urltocheckout = str_replace('http://', '', $urltocheckout);
-				
+
 				if ($urltocheckout == $urltocheck)  {
 					$urltocheck = str_replace('url(', '', $urltocheck);
 					$urltocheck = str_replace('"', '', $urltocheck);
 					$urltocheck = str_replace("'", '', $urltocheck);
 					$urltocheck = str_replace(')', '', $urltocheck);
 					if (substr($urltocheck, 0, 1) != '/') {
-	
+
 						$checkuppatharr = explode('../', $urltocheck);
-	
+
 						$countcheckuppatharr = count($checkuppatharr);
 						if ($countcheckuppatharr > 0) {
 							$outurltocheck = $checkuppatharr[$countcheckuppatharr-1];
@@ -3129,71 +3153,58 @@ class IndexReloaded {
 							for ($p=0;$p<=$countcheckpatharr-$countcheckuppatharr;$p++) {
 								$outurltocheckpart1 .= $checkpatharr[$p] . '/';
 							}
-							
+
 							$urltocheck = $outurltocheckpart1 . $outurltocheck;
 						} else {
 							$urltocheck = $checkpath .'/' . $urltocheck;
 						}
-	
+
 						$writecsstextarr2[0] = $urltocheck;
-						
+
 						$atimporttoreplace = '@import' . $fullimportelement;
 					} else {
 						$atimporttoreplace = '@import' . $fullimportelement;
 					}
-	
+
 				} else {
 					$atimporttoreplace = '@import' . $fullimportelement;
 				}
 				//read $urltocheck
-	
+
 				if (DIRECTORY_SEPARATOR == '\\') {
 					// windows
 					$filefromroot = str_replace('/', '\\', $urltocheck);
 				} else {
 					$filefromroot = $urltocheck;
 				}
-				
+
 				if (substr($filefromroot, 0, 1) != DIRECTORY_SEPARATOR) {
 					$filefromroot = DIRECTORY_SEPARATOR . $filefromroot;
 				}
-				
-				$rawfilestrarr=explode('?', realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '', 
+
+				$rawfilestrarr=explode('?', realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
 						str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filefromroot);
 				$rawfilestr=$rawfilestrarr[0];
 				$fileimport = str_replace(':\\', ':\\\\', $rawfilestr);
-				
+
 				//return $fileimport;
 				if (file_exists($fileimport)) {
 					$writecsstextout .= file_get_contents($fileimport) . "\n";
 				} else {
 					$writecsstextout .= $atimporttoreplace . "\n";
 				}
-				
+
 				$writecsstextout .= $remainingcss;
-				
+
 			}
-			
+
 			$writecsstextout = $initialcss . $writecsstextout;
 		}
 		return $writecsstextout;
 	}
-	
+
 	/**
-	 * Function for static version numbers on files, based on the filemtime
-	 *
-	 * This will make the filename automatically change when a file is
-	 * changed, and by that re-cached by the browser. If the file does not
-	 * exist physically the original file passed to the function is
-	 * returned without the timestamp.
-	 *
-	 * Behaviour is influenced by the setting
-	 * TYPO3_CONF_VARS[TYPO3_MODE][versionNumberInFilename]
-	 * = TRUE (BE) / "embed" (FE) : modify filename
-	 * = FALSE (BE) / "querystring" (FE) : add timestamp as parameter
-	 *
-	 *                      ...the versioning to occur in the query string. This is needed for scriptaculous.js ...
-	 *                      ...which cannot have a different filename in order to load its modules (?load=...)
+	 * Modified function for static version numbers on files, based on the filemtime
 	 *
 	 * @param	string		$file Relative path to file including all potential query parameters (not htmlspecialchared yet)
 	 * @param	boolean		$forceQueryString If settings would suggest to embed in filename, this parameter allows us to force ...
@@ -3201,11 +3212,11 @@ class IndexReloaded {
 	 */
 	protected function createVersionNumberedFilename($file, $forceQueryString = FALSE) {
 		$lookupFile = explode('?', $file);
-		
+
 		$path = realpath(str_replace($this->extensionrelwinpath . '\Classes\Controller', '',
 				str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $lookupFile[0];
-		
-		
+
+
 		$mode = $this->createVersionNumberedFilenamemode;
 		$modequerystring = FALSE;
 		if ($mode === 'embed') {
@@ -3216,16 +3227,16 @@ class IndexReloaded {
 			} else {
 				$doNothing = TRUE;
 			}
-			
+
 		}
-		
+
 		if ($forceQueryString == TRUE) {
 			$modequerystring = FALSE;
 		}
-		
+
 		if (!file_exists($path)) {
 			// File not found, return filename unaltered
-			$fullName = $file;	
+			$fullName = $file;
 		} else {
 			if (($modequerystring == FALSE) || ($forceQueryString== TRUE)) {
 				// If use of .htaccess rule is not configured,
@@ -3235,8 +3246,8 @@ class IndexReloaded {
 				} else {
 					$separator = '?';
 				}
-	
-				$fullName = $file . $separator . filemtime($path);	
+
+				$fullName = $file . $separator . filemtime($path);
 			} else {
 				// Change the filename
 				$name = explode('.', $lookupFile[0]);
@@ -3246,13 +3257,13 @@ class IndexReloaded {
 				// append potential query string
 				$fullName .= $lookupFile[1] ? '?' . $lookupFile[1] : '';
 			}
-			
+
 		}
-	
+
 		return $fullName;
 	}
 
-		
+
 	/**
 	 * Used to determine pagename outside TYPO3
 	 * Url-name of the page like 'home.html?L=2&no_cache=1&purge_cache=0&objecttype=someobjecttype&id=4546'
@@ -3260,19 +3271,19 @@ class IndexReloaded {
 	 *
 	 * @return	string		name like 'home.html?L=&purge_cache=&objecttype=someobjecttype&id='
 	 */
-	protected function currentPageName() {	
+	protected function currentPageName() {
 		if (!isset($_SERVER['REQUEST_URI'])) {
 			$serverrequri = $_SERVER['PHP_SELF'];
 		} else {
 			$serverrequri = $_SERVER['REQUEST_URI'];
 		}
-		
+
 		$slcurrentPageNamearr = explode('?', $slcurrentPageName);
 		if (count($slcurrentPageNamearr) > 1) {
 			$slcurrentPageNamearr[1] = preg_replace('/[0-9]+/', '', $slcurrentPageNamearr[1]);
 			$slcurrentPageName = implode('?', $slcurrentPageNamearr);
 		}
-		
+
 		$slcurrentPageName=str_replace('?&no_cache=1', '', $serverrequri);
 		$slcurrentPageName=str_replace('?no_cache=1', '', $slcurrentPageName);
 		$slcurrentPageName=str_replace('&no_cache=1', '', $slcurrentPageName);
@@ -3286,17 +3297,18 @@ class IndexReloaded {
 			if (strpos($slcurrentPageName, '.') > strpos($slcurrentPageName, '+')) {
 				$tmppagename = substr($slcurrentPageName, 0, (strpos($slcurrentPageName, '+') - 1)) . substr($slcurrentPageName, strpos($slcurrentPageName, '.'));
 			}
-			
-			$slcurrentPageName = $tmppagename;				
+
+			$slcurrentPageName = $tmppagename;
 		}
-		
+
 		return $slcurrentPageName;
-	}	
-	
+	}
+
 	/**
 	 * API call for folding
 	 *
-	 * @param	secret
+	 * @param	string		$secret
+	 * @param	array		$datain: ...
 	 * @return	void
 	 */
 	protected function apiCall($secret, $datain) {
@@ -3356,19 +3368,19 @@ class IndexReloaded {
 			curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 7);
 			curl_setopt($ch, CURLOPT_POST, TRUE);
 			curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($dataarr));
-				
+
 			$data = curl_exec($ch);
 			$curl_errno = curl_errno($ch);
 
 			if ($data != '') {
-				
+
 				if ($curl_errno > 0) {
 					$curl_errmsg =  curl_error($ch);
 					curl_close($ch);
 					$infomessage = 'Curl, error reading: ' . $curl_errmsg;
 					$alertmsg = 1;
 				} else {
-	
+
 					$infohttpcode = intval(curl_getinfo($ch, CURLINFO_HTTP_CODE));
 					// checking mime types
 					if ($infohttpcode < 400)  {
@@ -3380,7 +3392,7 @@ class IndexReloaded {
 						curl_close($ch);
 					}
 				}
-				
+
 			} else {
 				curl_close($ch);
 				$infomessage = 'no data received for inputdata ' . http_build_query($dataarr);
@@ -3400,7 +3412,11 @@ class IndexReloaded {
 		}
 
 	}
-	// Function to get the client IP address
+	/**
+	 * Function to get the client IP address
+	 *
+	 * @return	string		client IP address
+	 */
 	private function get_client_ip() {
 		$ipaddress = '';
 		if (getenv('HTTP_CLIENT_IP'))

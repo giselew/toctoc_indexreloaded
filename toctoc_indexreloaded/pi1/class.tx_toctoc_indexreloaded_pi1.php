@@ -27,13 +27,11 @@
  *
  *
  *   59: class tx_toctoc_indexreloaded_pi1 extends tslib_pibase
- *   67:     public function main($content, $conf = array())
- *   81:     public function contentPostProc(&$params, &$reference)
- * 1528:     protected function crunchcss($buffer)
- * 1554:     protected function compressjs($buffer, $doMinify)
- * 1585:     protected function handleCssAtImportFiles($writecsstext, $checkpath, $checkpatharr, $countcheckpatharr)
+ *   73:     public function intPages(&$params, &$reference)
+ *   90:     public function noIntPages(&$params, &$reference)
+ *  106:     public function contentPostProc(&$params, &$reference)
  *
- * TOTAL FUNCTIONS: 5
+ * TOTAL FUNCTIONS: 3
  * (This index is automatically created/updated by the extension "extdeveval")
  *
  */
@@ -65,13 +63,13 @@ class tx_toctoc_indexreloaded_pi1 extends tslib_pibase {
 	public $pi_checkCHash = TRUE;
 
 	    /**
-     * Hook output after rendering the content.
-     * - no cached pages
-     *
-     * @param object $params parameter array
-     * @param object $reference parent object
-     * @return void
-     */
+ * Hook output after rendering the content.
+ * - no cached pages
+ *
+ * @param	object		$params parameter array
+ * @param	object		$reference parent object
+ * @return	void
+ */
     public function intPages(&$params, &$reference)
     {
         if (!$GLOBALS['TSFE']->isINTincScript()) {
@@ -82,13 +80,13 @@ class tx_toctoc_indexreloaded_pi1 extends tslib_pibase {
      }
 
     /**
-     * Hook output after rendering the content.
-     * - cached pages
-     *
-     * @param object $params $_params: parameter array
-     * @param object $reference $pObj: parent object
-     * @return void
-     */
+ * Hook output after rendering the content.
+ * - cached pages
+ *
+ * @param	object		$params $_params: parameter array
+ * @param	object		$reference $pObj: parent object
+ * @return	void
+ */
     public function noIntPages(&$params, &$reference)
     {
         if ($GLOBALS['TSFE']->isINTincScript()) {
@@ -99,15 +97,15 @@ class tx_toctoc_indexreloaded_pi1 extends tslib_pibase {
     }
 
     /**
-	 * Parsing HTML content and reorganize CSS and JS
-	 *
-     * @param object        $_params: parameter array
-     * @param object        $reference $pObj: parent object
-	 * @return	string		$params['pObj']->content
-	 */
+ * Parsing HTML content and reorganize CSS and JS
+ *
+ * @param	object		$_params: parameter array
+ * @param	object		$reference $pObj: parent object
+ * @return	string		$params['pObj']->content
+ */
 	public function contentPostProc(&$params, &$reference)	{
 		$buffer = $params['pObj']->content;
-		
+
 		$showDebugWindow = TRUE;
 		if (version_compare(TYPO3_version, '4.9', '>')) {
 			if (!\TYPO3\CMS\Core\Utility\GeneralUtility::cmpIP(
@@ -115,42 +113,42 @@ class tx_toctoc_indexreloaded_pi1 extends tslib_pibase {
 					$GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])
 			) {
 				$showDebugWindow = FALSE;
-				
+
 			}
-		
+
 		} else {
 			if(!t3lib_div::cmpIP(t3lib_div::getIndpEnv('REMOTE_ADDR'), $GLOBALS['TYPO3_CONF_VARS']['SYS']['devIPmask'])) {
 				$showDebugWindow = FALSE;
 			}
-		
+
 		}
-		
+
 		$createVersionNumberedFilenamemode = trim(strtolower($GLOBALS['TYPO3_CONF_VARS']['FE']['versionNumberInFilename']));
-		$opts = array();		
+		$opts = array();
 		if (isset($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['toctoc_indexreloaded'])) {
 			$opts = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['toctoc_indexreloaded']);
 		}
-		
-		$conf = array();		
-		if (t3lib_extMgm::isLoaded('toctoc_indexreloaded') == TRUE) {		
+
+		$conf = array();
+		if (t3lib_extMgm::isLoaded('toctoc_indexreloaded') == TRUE) {
 			$conf = $GLOBALS['TSFE']->tmpl->setup['plugin.']['tx_toctoc_indexreloaded_pi1.'];
 			if (count($conf) > 2) {
 				$conf['APIKey'] = $opts['APIKey'];
 				$conf['APIServer'] = $opts['APIServer'];
-				$opts = $conf;				
-			} 
-			
-		} 
-		
+				$opts = $conf;
+			}
+
+		}
+
 		$TSFEid = $GLOBALS['TSFE']->id;
 		$userUid = $GLOBALS['TSFE']->fe_user->user['uid'];
-				
+
 		require_once(t3lib_extMgm::extPath('toctoc_indexreloaded', 'Classes/Controller/IndexReloaded.php'));
-		$IndexReloaded = new GiseleWendl\ToctocIndexreloaded\Controller\IndexReloaded;	
-					
-		$bufferout = $IndexReloaded->contentPostProc($buffer, $userUid, '', $showDebugWindow, $createVersionNumberedFilenamemode, $opts, $TSFEid);	
+		$IndexReloaded = new GiseleWendl\ToctocIndexreloaded\Controller\IndexReloaded;
+
+		$bufferout = $IndexReloaded->contentPostProc($buffer, $userUid, '', $showDebugWindow, $createVersionNumberedFilenamemode, $opts, $TSFEid);
 		$params['pObj']->content = $bufferout;
-	}	
+	}
 
 }
 
