@@ -17,6 +17,4 @@ On TYPO3-forge you can ask all questions and report all bugs you don't dare to r
 
 Please, avoid sending e-mails directly, thanks!
 
-For more news checkout `www.toctoc.ch <http://www.toctoc.ch/>`__ from time to time, thanks.
-
 

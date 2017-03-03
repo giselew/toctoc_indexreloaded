@@ -14,4 +14,4 @@ New in this Manual for version 2.0.0
 - All about CSS-folding
 - How and why use an API-key
 - Extension configuration from extension manager or from TypoScript
-- File handling and other causes that trigger recreation of CSS and JS files
+- File handling and other things triggering recreation of CSS and JS files. We added more information about the way *toctoc_indexreloaded* processes the files.

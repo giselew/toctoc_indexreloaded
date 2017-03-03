@@ -23,8 +23,7 @@ EXT: TocToc Index Reloaded
         en
 
     :Description:
-        Optimization of the final page: Reorganises CSS and JS in the output of index.php, reducing
-        file-requests to the server and bandwidth used. CSS and JS reorganization, concatentation, compression and common CSS-above and below the fold
+        Optimization of the final page: Reorganises CSS and JS in the output of index.php, reducing file-requests to the server and bandwidth used. CSS and JS reorganization, concatentation, compression and common CSS-above and below the fold
 
     :Keywords:
         forAdmins, forAdvanced, CSS/JS Processing, Outputpostprocessing
@@ -45,7 +44,7 @@ EXT: TocToc Index Reloaded
     :Rendered:
         |today|
 
-    The content of this document is related to TYPO3,
+    The content of this document is related to TYPO3, 
     a GNU/GPL CMS/Framework available from `www.typo3.org <https://typo3.org/>`__.
 
 

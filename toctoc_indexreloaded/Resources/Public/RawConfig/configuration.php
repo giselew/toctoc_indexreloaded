@@ -58,7 +58,7 @@ $ret = array (
 // The tags in this list always remain in the CSS above the fold
 	'tagsToKeepAboveTheFold' => 'code, i, b, blockquote',
 // The class names in this list always remain in the CSS above the fold
-	'classesToKeepAboveTheFold' => 'tx-tc-login-form-iframe, tx-tc-login-form-iframe-forgotpw',
+	'classesToKeepAboveTheFold' => 'tx-tc-login-form-iframe,tx-tc-login-form-iframe-forgotpw, tx-tc-sharrrearea-popup, sharrre',
 // The CSS-Ids in this list always remain in the CSS above the fold
 	'IDsToKeepAboveTheFold' => '',
 // When generateCSSbelowTheFold' => 1, then merge new CSS into existing CSS (above and below the fold)

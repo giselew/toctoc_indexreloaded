@@ -21,8 +21,9 @@ generateCSSbelowTheFold                                boolean     Split CSS int
 tagsToKeepAboveTheFold                                 string      The tags in this list always remain in the CSS above     code,i,b,blockquote      
                                                                    the fold 
 -----------------------------------------------------  ----------  -------------------------------------------------------  -----------------------------------------------------
-classesToKeepAboveTheFold                              string      The class names in this list always remain in the CSS    
-                                                                   above the fold           
+classesToKeepAboveTheFold                              string      The class names in this list always remain in the CSS    tx-tc-login-form-iframe,
+                                                                   above the fold                                           tx-tc-login-form-iframe-forgotpw, 
+                                                                   (Ext:toctoc_comments uses the present defaults)          tx-tc-sharrrearea-popup, sharrre
 -----------------------------------------------------  ----------  -------------------------------------------------------  -----------------------------------------------------
 IDsToKeepAboveTheFold                                  string      The CSS-Ids in this list always remain in the CSS      
                                                                    above the fold          

@@ -62,7 +62,7 @@ generateCSSbelowTheFold = 0
 tagsToKeepAboveTheFold = code,i,b,blockquote
 
 # cat=cssfolding//03; type=string; label=The class names in this list always remain in the CSS above the fold
-classesToKeepAboveTheFold = 
+classesToKeepAboveTheFold = tx-tc-login-form-iframe,tx-tc-login-form-iframe-forgotpw, tx-tc-sharrrearea-popup, sharrre
 
 # cat=cssfolding//03; type=string; label=The CSS-Ids in this list always remain in the CSS above the fold
 IDsToKeepAboveTheFold =

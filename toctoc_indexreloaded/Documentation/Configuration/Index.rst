@@ -14,12 +14,13 @@ Configuration
 .. index::
 	single: Configuration; Overview
 
-This section talks about configuration. It can be done 1. in EM, if you need specific setup for certain pages then you need to
-install static TypoScript template and use constants or setup in TypoScript. 
-Out side TYPO3 use file Resources/Public/RawCofiguration/configuration.php
+This section talks about configuration. It can be done in EM, valid for the entire site. For individual setups of specific pages then you need to install static TypoScript template and use constants or setup in TypoScript. 
 
-By default default the extension is not active. Also CSS folding is not active. Check the options to find out how to give it a start :-)
-needed to change a value. 
+Outside TYPO3 use file Resources/Public/RawConfig/configuration.php
+
+By default default the extension is not active. Also CSS folding is not active. 
+
+Uncheck option **dontmod** to give it a start :-). 
 
 .. toctree::
     :maxdepth: 2

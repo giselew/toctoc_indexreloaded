@@ -20,7 +20,8 @@ showDebugWindow                                       boolean     Show the debug
  
                                                                   devIPmask must match your IP.
 ----------------------------------------------------  ----------  -------------------------------------------------------  -----------------------------------------------------
-DebugWindowBodyTag                                    string      Append debug window to tag: The html of the debug        <body>                                                                 wintwindow is appended to this tag      
+DebugWindowBodyTag                                    string      Append debug window to tag: The html of the              <body>
+                                                                  debug-window is appended to this tag      
 ----------------------------------------------------  ----------  -------------------------------------------------------  -----------------------------------------------------
 showOptionsInDebugWindow                              boolean     Show options used in the debug window                    0
 ----------------------------------------------------  ----------  -------------------------------------------------------  -----------------------------------------------------
