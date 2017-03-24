@@ -54,5 +54,26 @@
 	* Release of version 1.9.11 - This is a "github only" beta-version for Version 2.0.0
 	* Free API key for 30 days available on https://www.toctoc.ch/de/apikey/
 	* Please see git hub for comments on changes https://github.com/giselew/toctoc_indexreloaded/commits/master
+2017-03-24  Gisèle Wendl  <gisele.wendl@toctoc.ch>
+	* Release of version 2.0.0 - Summary of all changes since 1.9.0:
+	* CSS above- and below-the-fold 
+	  Choose between "individual CSS-files per page" (fast) or "common (merged) CSS" (faster)
+	  Apply freeze of CSS recreation when CSS is stable
+	* CSS folding and merge is done by webservice on toctoc.ch - it requires an API key (https://www.toctoc.ch/en/home/apikey/)
+	* Free API key for 30 days available on https://www.toctoc.ch/de/apikey/
+	  Ext:toctoc_indexreloaded should work in any PHP-solution or other CMS 
+	  (It does post-processing of the server reply without TYPO3), 
+	  see file in folder Resources/Public/ExternalUse
+	* When a querystring for original files is present, then the date information to form final file names is from the querystring - 
+	  it avoids some unnecessary access to the filesystem
+	* Last loaded JS-file may be loaded asynch with option process.asynchLastJS = 1
+	* Added TypoScript-Setup and constants: 
+	  As up to present version the extension configures in TYPO3 ext-manager,
+	  if static template is added, then TS-Setup and Constants are valid 
+	  (replacing configuration from ext manager)
+	* Added option typo3tempsubfolder: Place for the JS and CSS-files
+	* Non-TYPO3-Sites may use a configuration-file in folder Resources/Public/RawConfig
+	* Dropped OpenOffice-documentation because of the redundancy to the rst-documentation
+	
 
 

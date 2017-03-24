@@ -29,19 +29,20 @@ namespace GiseleWendl\ToctocIndexreloaded\Controller;
  *   63: class IndexReloaded
  *  179:     public function contentPostProc($buffer, $userUid = 0, $relativePathToExtension = '', $showDebugWindow = FALSE,
 		$createVersionNumberedFilenamemode = 'querystring', $opts = array(), $TSFEid = 0)
- * 2551:     private function foldingCSSreportentry($entryname, $filecontents, $mediacorrectrules = FALSE)
- * 2617:     private function mergeCSS($soucedirectory, $filename, $foldingmd5, $filecontent, $filecontentbelowthefold, $filecontentoPosabove, $filecontentoPosbelow)
- * 2770:     protected function htmlFoldMeta($bufferin)
- * 2935:     protected function splitCSSBelowAboveTheFold($filecontent)
- * 3017:     protected function crunchcss($buffer, $minimal = FALSE)
- * 3045:     protected function unCrunchcss($buffer)
- * 3080:     protected function isCompressed($buffer)
- * 3101:     protected function compressjs($buffer, $doMinify, $minimal = FALSE)
- * 3134:     protected function handleCssAtImportFiles($writecsstext, $checkpath, $checkpatharr, $countcheckpatharr)
- * 3261:     protected function createVersionNumberedFilename($file, $forceQueryString = FALSE)
- * 3322:     protected function currentPageName()
- * 3362:     protected function apiCall($secret, $datain)
- * 3468:     private function get_client_ip()
+ * 2271:     function loadStyleSheet(src)
+ * 2601:     private function foldingCSSreportentry($entryname, $filecontents, $mediacorrectrules = FALSE)
+ * 2667:     private function mergeCSS($soucedirectory, $filename, $foldingmd5, $filecontent, $filecontentbelowthefold, $filecontentoPosabove, $filecontentoPosbelow)
+ * 2820:     protected function htmlFoldMeta($bufferin)
+ * 2985:     protected function splitCSSBelowAboveTheFold($filecontent)
+ * 3067:     protected function crunchcss($buffer, $minimal = FALSE)
+ * 3095:     protected function unCrunchcss($buffer)
+ * 3130:     protected function isCompressed($buffer)
+ * 3151:     protected function compressjs($buffer, $doMinify, $minimal = FALSE)
+ * 3184:     protected function handleCssAtImportFiles($writecsstext, $checkpath, $checkpatharr, $countcheckpatharr)
+ * 3315:     protected function createVersionNumberedFilename($file, $forceQueryString = FALSE)
+ * 3376:     protected function currentPageName()
+ * 3416:     protected function apiCall($secret, $datain)
+ * 3522:     private function get_client_ip()
  *
  * TOTAL FUNCTIONS: 15
  * (This index is automatically created/updated by the extension "extdeveval")
@@ -626,7 +627,7 @@ class IndexReloaded {
 			}
 
 			$debuginfo = '<div id="tt_ri_dbg">';
-			$debuginfo .= '<span class="tt_ri_dbg_close" title="close debug window" onclick="document.getElementById(\'tt_ri_dbg\').style.display=\'none\';">X</span>' . 
+			$debuginfo .= '<span class="tt_ri_dbg_close" title="close debug window" onclick="document.getElementById(\'tt_ri_dbg\').style.display=\'none\';">X</span>' .
 			'<div class="ttirl_title"><strong>TocToc Index Reloaded</strong><br /><span class="ttirlsmall">'.date('F j, Y, g:i a').'</span></div>';
 		}
 		// end | string with options used for debug window
@@ -1944,7 +1945,7 @@ class IndexReloaded {
 										$startatmedia =  '(' . $startatmedia . ')';
 										$writecsstextwrk = $this->crunchcss($writecsstext);
 										$writecsstextatmediaarr = explode('@media', $writecsstextwrk);
-										
+
 										$cntatmediaintext = count($writecsstextatmediaarr);
 										if ($cntatmediaintext > 1) {
 											$writecsstextout = '';
@@ -1959,11 +1960,11 @@ class IndexReloaded {
 													array_shift($mediaarr);
 												}
 												$writecsstextatmediaarr[$mt] = implode('{', $mediaarr);
-												
+
 												if ($writecsstextatmediaarr[$mt] == '}') {
 													//EMPTY AT MEDIA, DROP
 													$writecsstextout .= '';
-// 													
+//
 												} else {
 													$mediaarr2 = explode('}}', $writecsstextatmediaarr[$mt]);
 													if (count($mediaarr2) > 1) {
@@ -1974,21 +1975,21 @@ class IndexReloaded {
 														} else {
 															//print '$mediaarr2 ' . $mediaarr2[1] .'<br>';
 														}
-														
+
 													} else {
-														
-														$writecsstextout .= '@media ' . trim($mediatype) . ' {' . "\n" . $writecsstextatmediaarr[$mt] . 
+
+														$writecsstextout .= '@media ' . trim($mediatype) . ' {' . "\n" . $writecsstextatmediaarr[$mt] .
 														$endmediatype . "\n";
 													}
-													
+
 												}
-																								
+
 											}
 											$endmediatype = '';
-											
+
 											$writecsstext= $writecsstextout;
 										}
-										
+
 									}
 
 									$filecontent .= $startmediatype . $writecsstext . $endmediatype . "\n";
@@ -3190,7 +3191,7 @@ class IndexReloaded {
 			$writecsstextarr = explode('@import', $writecsstext);
 			$writecsstextarrcount=count($writecsstextarr);
 			$initialcss = $writecsstextarr[0];
-			
+
 			for ($q=1;$q<$writecsstextarrcount;$q++) {
 				$hypos='';
 				$writecsstextqarr = array();
@@ -3289,7 +3290,7 @@ class IndexReloaded {
 						str_replace($this->extensionrelpath . '/Classes/Controller', '', dirname(__FILE__)))) . $filefromroot);
 				$rawfilestr=$rawfilestrarr[0];
 				$fileimport = str_replace(':\\', ':\\\\', $rawfilestr);
-				
+
 				//return $fileimport;
 				if (file_exists($fileimport)) {
 					$writecsstextout .= file_get_contents($fileimport) . "\n";
